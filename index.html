@@ -383,7 +383,7 @@
                 //     method: 'POST',
                 //     body: JSON.stringify({ cmdACK: {} })
                 // });
-                
+
                 alert(dictionary.modals.alert.acknowledge.success.content[language]);
             } catch (error) {
                 alert(dictionary.modals.alert.acknowledge.error.content[language]);
@@ -392,7 +392,7 @@
 
         async function reset() {
             if (!isAuthenticated) return;
-            
+
             try {
                 // Here you would call your API
                 // await fetch('/api/cmd', {
@@ -400,7 +400,7 @@
                 //     method: 'POST',
                 //     body: JSON.stringify({ cmdReset: {} })
                 // });
-                
+
                 alert(dictionary.modals.alert.reset.success.content[language]);
             } catch (error) {
                 alert(dictionary.modals.alert.reset.error.content[language]);
@@ -409,7 +409,7 @@
 
         async function test() {
             if (!isAuthenticated) return;
-            
+
             try {
                 // Here you would call your API
                 // await fetch('/api/cmd', {
@@ -417,7 +417,7 @@
                 //     method: 'POST',
                 //     body: JSON.stringify({ cmdTest: {} })
                 // });
-                
+
                 alert(dictionary.modals.alert.test.success.content[language]);
             } catch (error) {
                 alert(dictionary.modals.alert.test.error.content[language]);
@@ -429,7 +429,7 @@
             const acknowledgeBtn = document.getElementById('acknowledgeBtn');
             const resetBtn = document.getElementById('resetBtn');
             const testBtn = document.getElementById('testBtn');
-            
+
             if (acknowledgeBtn) {
                 acknowledgeBtn.querySelector('span').textContent = dictionary.main.buttons.acknowledge[language];
             }
@@ -470,7 +470,7 @@
                 { status: 1, number: 2, alias: 'ENTRADA 2', enable: 1 },
                 { status: 5, number: 3, alias: 'ENTRADA 3', enable: 1 }
             ];
-            
+
             document.getElementById('generalDataName').textContent = installationName; // Set device name
             updateStatusBarIcons(statusData);
             renderBars(lines, inputs);
@@ -491,6 +491,7 @@
             height: calc(100vh - 36px);
             overflow: auto;
             overflow-y: scroll;
+            background-color: grey;
         }
 
         p {
@@ -529,6 +530,15 @@
             padding-left: 4px;
             color: white;
             text-align: center;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: space-evenly;
+            background: whitesmoke;
+            padding: 8px;
         }
 
         /* GENERALES */
@@ -672,12 +682,11 @@
             </div>
         </nav>
     </header>
-    <main style="background-color: grey;" class="row">
+    <main class="row">
         <div class="bar-container">
             <!-- Bars will be dynamically rendered here -->
         </div>
-        <div class="column button-container"
-            style="display: flex; flex-direction: column; align-items: stretch; justify-content: space-evenly; background: whitesmoke; padding: 8px;">
+        <div class="column button-container">
             <button class="barbutton" id="acknowledgeBtn" onclick="acknowledge()">
                 <img src="/assets/icons/check.svg" alt="Acknowledge" />
                 <span></span>
@@ -688,7 +697,6 @@
                 <span></span>
             </button>
             <div class="buttons-separator"></div>
-
             <button class="barbutton" id="testBtn" onclick="test()" disabled>
                 <img src="/assets/icons/test.svg" alt="Test" />
                 <span></span>
