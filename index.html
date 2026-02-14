@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script>
-        const language = 'es';
+        const language = 'es'; // This would be dynamically set based on user preference or system settings
         let isAuthenticated = false;
 
         const statusLyE = {
@@ -426,15 +426,20 @@
 
         function updateButtons() {
             // Update button texts from dictionary
-            const buttons = document.querySelectorAll('.button-container button');
-            if (buttons.length >= 3) {
-                buttons[0].querySelector('span').textContent = dictionary.main.buttons.acknowledge[language];
-                buttons[1].querySelector('span').textContent = dictionary.main.buttons.reset[language];
-                buttons[2].querySelector('span').textContent = dictionary.main.buttons.test[language];
-                
-                // Update disabled state
-                buttons[1].disabled = !isAuthenticated;
-                buttons[2].disabled = !isAuthenticated;
+            const acknowledgeBtn = document.getElementById('acknowledgeBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const testBtn = document.getElementById('testBtn');
+            
+            if (acknowledgeBtn) {
+                acknowledgeBtn.querySelector('span').textContent = dictionary.main.buttons.acknowledge[language];
+            }
+            if (resetBtn) {
+                resetBtn.querySelector('span').textContent = dictionary.main.buttons.reset[language];
+                resetBtn.disabled = !isAuthenticated;
+            }
+            if (testBtn) {
+                testBtn.querySelector('span').textContent = dictionary.main.buttons.test[language];
+                testBtn.disabled = !isAuthenticated;
             }
         }
 
@@ -673,20 +678,20 @@
         </div>
         <div class="column button-container"
             style="display: flex; flex-direction: column; align-items: stretch; justify-content: space-evenly; background: whitesmoke; padding: 8px;">
-            <button class="barbutton" onclick="acknowledge()">
+            <button class="barbutton" id="acknowledgeBtn" onclick="acknowledge()">
                 <img src="/assets/icons/check.svg" alt="Acknowledge" />
-                <span>Aceptacion</span>
+                <span></span>
             </button>
             <div class="buttons-separator"></div>
-            <button class="barbutton" onclick="reset()" disabled>
+            <button class="barbutton" id="resetBtn" onclick="reset()" disabled>
                 <img src="/assets/icons/reset.svg" alt="Reset" />
-                <span>Reset</span>
+                <span></span>
             </button>
             <div class="buttons-separator"></div>
 
-            <button class="barbutton" onclick="test()" disabled>
+            <button class="barbutton" id="testBtn" onclick="test()" disabled>
                 <img src="/assets/icons/test.svg" alt="Test" />
-                <span>Test</span>
+                <span></span>
             </button>
         </div>
     </main>
