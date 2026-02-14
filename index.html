@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script>
-        const language = 'en';
+        const language = 'es';
 
         const statusLyE = {
             en: [
@@ -127,6 +127,148 @@
             },
         };
 
+        // Helper functions for bars
+        function getBarColor(type, status) {
+            if (type === 'line') {
+                switch (status) {
+                    case 0: return 'green';
+                    case 2: return 'red';
+                    case 3: return 'red';
+                    case 4: return 'red';
+                    case 6: return 'yellow';
+                    case 7: return 'yellow';
+                    case 8: return 'yellow';
+                    default: return 'green';
+                }
+            } else {
+                switch (status) {
+                    case 0: return 'green';
+                    case 1: return 'red';
+                    case 4: return 'red';
+                    case 5: return 'yellow';
+                    case 8: return 'yellow';
+                    case 9: return 'red';
+                    case 12: return 'red';
+                    default: return 'green';
+                }
+            }
+        }
+
+        function getBarIcon(type, status) {
+            if (type === 'line') {
+                switch (status) {
+                    case 0: return 'assets/icons/check.svg';
+                    case 2: return 'assets/icons/bell.svg';
+                    case 3: return 'assets/icons/bell.svg';
+                    case 4: return 'assets/icons/bell.svg';
+                    case 6: return 'assets/icons/fault.svg';
+                    case 7: return 'assets/icons/fault.svg';
+                    case 8: return 'assets/icons/disconnect.svg';
+                    default: return 'assets/icons/check.svg';
+                }
+            } else {
+                switch (status) {
+                    case 0: return 'assets/icons/check.svg';
+                    case 1: return 'assets/icons/bell.svg';
+                    case 4: return 'assets/icons/bell.svg';
+                    case 5: return 'assets/icons/fault.svg';
+                    case 8: return 'assets/icons/fault.svg';
+                    case 9: return 'assets/icons/bell.svg';
+                    case 12: return 'assets/icons/bell.svg';
+                    default: return 'assets/icons/check.svg';
+                }
+            }
+        }
+
+        function getBarName(type) {
+            return type === 'line'
+                ? dictionary.main.bar.line.name[language]
+                : dictionary.main.bar.input.name[language];
+        }
+
+        function getBarStatus(type, status) {
+            if (type === 'line') {
+                return dictionary.main.bar.line.status[language][status];
+            } else {
+                return dictionary.main.bar.input.status[language][status];
+            }
+        }
+
+        function renderLineBar(bar, type) {
+            // Skip if enable !== 1
+            if (bar.enable !== 1) return null;
+
+            const barDiv = document.createElement('div');
+            barDiv.className = `bar show ${getBarColor(type, bar.status)}`;
+
+            const contentContainer = document.createElement('div');
+            contentContainer.className = 'bar-content-container';
+
+            const icon = document.createElement('img');
+            icon.className = 'icon';
+            icon.src = getBarIcon(type, bar.status);
+            icon.alt = '';
+
+            const textDiv = document.createElement('div');
+            textDiv.className = 'bar-text';
+
+            const strong = document.createElement('strong');
+            strong.textContent = `${getBarName(type)}${bar.number} ${getBarStatus(type, bar.status)}`;
+
+            const aliasDiv = document.createElement('div');
+            const aliasSpan = document.createElement('span');
+            aliasSpan.textContent = bar.alias;
+            aliasDiv.appendChild(aliasSpan);
+
+            textDiv.appendChild(strong);
+            textDiv.appendChild(aliasDiv);
+
+            contentContainer.appendChild(icon);
+            contentContainer.appendChild(textDiv);
+            barDiv.appendChild(contentContainer);
+
+            return barDiv;
+        }
+
+        function orderLines(lines) {
+            return lines.sort((a, b) => a.number - b.number);
+        }
+
+        function orderInputs(inputs) {
+            return inputs.sort((a, b) => a.number - b.number);
+        }
+
+        function renderBars(lines, inputs) {
+            const mainContainer = document.querySelector('.bar-container');
+            if (!mainContainer) return;
+
+            mainContainer.innerHTML = '';
+
+            if (lines.length === 0 && inputs.length === 0) {
+                mainContainer.style.alignItems = 'center';
+                mainContainer.style.justifyContent = 'center';
+                const title = document.createElement('h3');
+                title.className = 'main-header-title';
+                title.textContent = dictionary.main.lineAndInputNormalization[language];
+                mainContainer.appendChild(title);
+            } else {
+                mainContainer.style.alignItems = '';
+                mainContainer.style.justifyContent = '';
+
+                const sortedLines = orderLines(lines);
+                const sortedInputs = orderInputs(inputs);
+
+                sortedLines.forEach(line => {
+                    const barElement = renderLineBar(line, 'line');
+                    if (barElement) mainContainer.appendChild(barElement);
+                });
+
+                sortedInputs.forEach(input => {
+                    const barElement = renderLineBar(input, 'input');
+                    if (barElement) mainContainer.appendChild(barElement);
+                });
+            }
+        }
 
         // Left container icons - conditional rendering
         function createIcon(src, alt) {
@@ -200,7 +342,7 @@
             const leftContainer = document.querySelector('.icon-container.left');
             if (leftContainer) {
                 leftContainer.innerHTML = '';
-                
+
                 if (statusData.alarm) {
                     leftContainer.appendChild(createIcon('assets/icons/bell.svg', dictionary.statusBar.alarm[language]));
                 }
@@ -233,7 +375,8 @@
 
         // Wait for DOM to be loaded before executing
         document.addEventListener('DOMContentLoaded', function () {
-            // Example usage
+            // Example data
+            const installationName = "CDI WIDGET";
             const statusData = {
                 // Left container
                 alarm: true,
@@ -247,9 +390,20 @@
                 powerSupply: true,
                 network: true
             };
-            document.getElementById('generalDataName').textContent = "CDI WIDGET"; // Set device name
-
+            const lines = [
+                { status: 0, number: 1, alias: 'LINEA 1', enable: 1 },
+                { status: 2, number: 2, alias: 'LINEA 2', enable: 1 },
+                { status: 6, number: 3, alias: 'LINEA 3', enable: 1 }
+            ];
+            const inputs = [
+                { status: 0, number: 1, alias: 'ENTRADA 1', enable: 1 },
+                { status: 1, number: 2, alias: 'ENTRADA 2', enable: 1 },
+                { status: 5, number: 3, alias: 'ENTRADA 3', enable: 1 }
+            ];
+            
+            document.getElementById('generalDataName').textContent = installationName; // Set device name
             updateStatusBarIcons(statusData);
+            renderBars(lines, inputs);
         });
     </script>
     <style>
@@ -372,6 +526,54 @@
         }
 
         /* ESTILO BOTONES */
+
+        /* ESTILO BARRAS */
+        .bar {
+            display: none;
+            justify-content: space-between;
+            border: 1px solid;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .bar.show {
+            display: flex;
+        }
+
+        .bar.green {
+            background-color: #d1e7dd;
+            border-color: #badbcc;
+            color: #0f5132;
+        }
+
+        .bar.red {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .bar.orange {
+            background-color: #fcd6a4;
+            border-color: #fbc784;
+            color: #7d4925;
+        }
+
+        .bar.yellow {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+            color: #856404;
+        }
+
+        .bar-content-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .bar-text {
+            font-size: 16px;
+        }
+
+        /* ESTILO BARRAS */
     </style>
 </head>
 
@@ -388,19 +590,12 @@
         </nav>
     </header>
     <main style="background-color: grey;" class="row">
-        @if (lines.length === 0 && inputs.length === 0) {
-        <div class="bar-container" style="align-items: center; justify-content: center;">
-            <h3 class="main-header-title">{{ dictionary.main.lineAndInputNormalization[language] }}</h3>
-        </div>
-        } @else {
         <div class="bar-container">
-            <app-line-bar *ngFor="let line of orderLines(lines)" [bar]="line" type="line"></app-line-bar>
-            <app-line-bar *ngFor="let input of orderInputs(inputs)" [bar]="input" type="input"></app-line-bar>
+            <!-- Bars will be dynamically rendered here -->
         </div>
-        }
         <div class="column"
             style="display: flex; flex-direction: column; align-items: stretch; justify-content: space-evenly; background: whitesmoke; padding: 8px;">
-            <button class="barbutton" onclick="Reset()">
+            <button class="barbutton" onclick="acknowledge()">
                 <img src="/assets/icons/check.svg" alt="Aceptacion" />
                 <span>Aceptacion</span>
             </button>
