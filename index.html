@@ -7,6 +7,7 @@
     <title>Document</title>
     <script>
         const language = 'es';
+        let isAuthenticated = false;
 
         const statusLyE = {
             en: [
@@ -373,6 +374,70 @@
             }
         }
 
+        // Button functions
+        async function acknowledge() {
+            try {
+                // Here you would call your API
+                // await fetch('/api/cmd', {
+                //     headers: { 'Content-Type': 'application/json' },
+                //     method: 'POST',
+                //     body: JSON.stringify({ cmdACK: {} })
+                // });
+                
+                alert(dictionary.modals.alert.acknowledge.success.content[language]);
+            } catch (error) {
+                alert(dictionary.modals.alert.acknowledge.error.content[language]);
+            }
+        }
+
+        async function reset() {
+            if (!isAuthenticated) return;
+            
+            try {
+                // Here you would call your API
+                // await fetch('/api/cmd', {
+                //     headers: { 'Content-Type': 'application/json' },
+                //     method: 'POST',
+                //     body: JSON.stringify({ cmdReset: {} })
+                // });
+                
+                alert(dictionary.modals.alert.reset.success.content[language]);
+            } catch (error) {
+                alert(dictionary.modals.alert.reset.error.content[language]);
+            }
+        }
+
+        async function test() {
+            if (!isAuthenticated) return;
+            
+            try {
+                // Here you would call your API
+                // await fetch('/api/cmd', {
+                //     headers: { 'Content-Type': 'application/json' },
+                //     method: 'POST',
+                //     body: JSON.stringify({ cmdTest: {} })
+                // });
+                
+                alert(dictionary.modals.alert.test.success.content[language]);
+            } catch (error) {
+                alert(dictionary.modals.alert.test.error.content[language]);
+            }
+        }
+
+        function updateButtons() {
+            // Update button texts from dictionary
+            const buttons = document.querySelectorAll('.button-container button');
+            if (buttons.length >= 3) {
+                buttons[0].querySelector('span').textContent = dictionary.main.buttons.acknowledge[language];
+                buttons[1].querySelector('span').textContent = dictionary.main.buttons.reset[language];
+                buttons[2].querySelector('span').textContent = dictionary.main.buttons.test[language];
+                
+                // Update disabled state
+                buttons[1].disabled = !isAuthenticated;
+                buttons[2].disabled = !isAuthenticated;
+            }
+        }
+
         // Wait for DOM to be loaded before executing
         document.addEventListener('DOMContentLoaded', function () {
             // Example data
@@ -404,6 +469,7 @@
             document.getElementById('generalDataName').textContent = installationName; // Set device name
             updateStatusBarIcons(statusData);
             renderBars(lines, inputs);
+            updateButtons();
         });
     </script>
     <style>
@@ -515,6 +581,18 @@
             cursor: pointer;
         }
 
+        .barbutton:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .buttons-separator {
+            height: 2px;
+            width: 100%;
+            background: rgb(224, 224, 224);
+            margin: 12px 0;
+        }
+
         .barbutton img {
             height: 32px;
             width: auto;
@@ -593,20 +671,20 @@
         <div class="bar-container">
             <!-- Bars will be dynamically rendered here -->
         </div>
-        <div class="column"
+        <div class="column button-container"
             style="display: flex; flex-direction: column; align-items: stretch; justify-content: space-evenly; background: whitesmoke; padding: 8px;">
             <button class="barbutton" onclick="acknowledge()">
-                <img src="/assets/icons/check.svg" alt="Aceptacion" />
+                <img src="/assets/icons/check.svg" alt="Acknowledge" />
                 <span>Aceptacion</span>
             </button>
-            <div style="height: 2px; width: 100%; background: rgb(224, 224, 224); margin: 12px 0;"></div>
-            <button class="barbutton" onclick="Reset()">
+            <div class="buttons-separator"></div>
+            <button class="barbutton" onclick="reset()" disabled>
                 <img src="/assets/icons/reset.svg" alt="Reset" />
                 <span>Reset</span>
             </button>
-            <div style="height: 2px; width: 100%; background: rgb(224, 224, 224); margin: 12px 0;"></div>
+            <div class="buttons-separator"></div>
 
-            <button class="barbutton" onclick="test()">
+            <button class="barbutton" onclick="test()" disabled>
                 <img src="/assets/icons/test.svg" alt="Test" />
                 <span>Test</span>
             </button>
