@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        const language = 'en';
+
+        const statusLyE = {
+            en: [
+                "Normal", "Alarm", "Alarm 2", "Alarm 1", "Technical alarm", "Fault", "Line open", "Line in short circuit", "Disabled", "Manual Download Button MDB", "Acknowledge", "Reset", "Abort", "System initialized", "Silence siren", "Low battery", "Full battery", "Power failure", "Power OK", "Robbery"
+            ],
+            es: [
+                "Normal", "Alarma", "Alarma 2", "Alarma 1", "Alarma Tecnica", "Falla", "Linea abierta", "Linea en corto", "Excluida", "Pulsador de Descarga Manual PDM", "Aceptacion", "Reset", "Aborto", "Sistema inicializado", "Silenciar sirena", "Bateria baja", "Bateria completa", "Falla alimentacion", "Alimentacion OK", "Robo"
+            ],
+            pt: [
+                "Normal", "Alarme", "Alarme 2", "Alarme 1", "Alarme Técnico", "Falha", "Linha aberta", "Linha curta", "Excluído", "Botão de download manual do PDM", "Aceitação", "Reiniciar", "Aborto", "Sistema inicializado", "Silêncio sirene", "Bateria Fraca", "Bateria cheia", "Falha de alimentação", "Alimentação OK", "Roubo"
+            ],
+            it: [
+                "Normale", "Allarme", "Allarme 2", "Allarme 1", "Allarme tecnico", "Macanza", "Linea aperta", "Linea corta", "Escluso", "Pulsante di download manuale del PDM", "Accettazione", "Ripristina", "Aborto", "Sistema inizializzato", "Sirena del silenzio", "Batteria scarica", "Batteria carica", "Mancanza di alimentazione", "Alimentazione OK", "Rapina"
+            ]
+        };
+
+        const dictionary = {
+            common: {
+                reset: { es: "Reiniciar", en: "Reset", pt: "Reiniciar", it: "Ripristina" },
+                manual: { es: "Manual", en: "Manual", pt: "Manual", it: "Manuale" }
+            },
+            modals: {
+                loader: {
+                    header: { es: "Cargando", en: "Loading", pt: "Carregando", it: "Caricamento" }
+                },
+                alert: {
+                    test: {
+                        success: {
+                            header: { es: "Enviado", en: "Sent", pt: "Enviado", it: "Inviato" },
+                            content: { es: "Test enviado correctamente", en: "Test sent correctly", pt: "Teste enviado corretamente", it: "Test inviato correttamente" }
+                        },
+                        error: {
+                            header: { es: "Error", en: "Error", pt: "Erro", it: "Errore" },
+                            content: { es: 'Error enviando test', en: "Error sending test", pt: "Erro ao enviar teste", it: "Errore nell'invio del test" }
+                        }
+                    },
+                    acknowledge: {
+                        success: {
+                            header: { es: "Enviado", en: "Sent", pt: "Enviado", it: "Inviato" },
+                            content: { es: "Aceptación enviado correctamente", en: "Acknowledge sent successfully", pt: "Aceitação enviada com sucesso", it: "Accettazione inviata correttamente" }
+                        },
+                        error: {
+                            header: { es: "Error", en: "Error", pt: "Erro", it: "Errore" },
+                            content: { es: 'Error enviando aceptación', en: "Error sending acknowledge", pt: "Erro ao enviar aceitação", it: "Errore nell'invio dell'accettazione" }
+                        }
+                    },
+                    reset: {
+                        success: {
+                            header: { es: "Enviado", en: "Sent", pt: "Enviado", it: "Inviato" },
+                            content: { es: "Reset enviado correctamente", en: "Reset sent successfully", pt: "Redefinição enviada com sucesso", it: "Reimpostazione inviata con successo" }
+                        },
+                        error: {
+                            header: { es: "Error", en: "Error", pt: "Erro", it: "Errore" },
+                            content: { es: 'Error enviando comando', en: "Error sending command", pt: "Erro ao enviar comando", it: "Errore nell'invio del comando" }
+                        }
+                    },
+                    acknowledgeInput: {
+                        header: { es: "Aceptacion", en: "Acknowledge", pt: "Aceitação", it: "Accettazione" },
+                        content: { es: "Entrada de aceptacion recibida", en: "Acknowledge input recived", pt: "Entrada de aceitação recebida", it: "Ingresso di accettazione ricevuto" }
+                    },
+                    resetInput: {
+                        header: { es: "Reset", en: "Reset", pt: "Redefinição", it: "Reimpostazione" },
+                        content: { es: "Reset enviado correctamente", en: "Reset input recived", pt: "Entrada de redefinição recebida", it: "Ingresso di reimpostazione ricevuto" }
+                    }
+                }
+            },
+            statusBar: {
+                alarm: { es: "Alarma General", en: "General alarm", pt: "Alarme geral", it: "Allarme generale" },
+                fault: { es: "Falla General", en: "General fault", pt: "Falha geral", it: "Macanza Generale" },
+                disconnect: { es: "Desconexion", en: "Disconnection", pt: "Desconexão", it: "Exclude" },
+                ground: { es: "Derivacion a tierra", en: "Ground connection", pt: "Desconexão", it: "Dispersione a terra" },
+                test: { es: "Test", en: "Test", pt: "Teste", it: "Test" },
+                extinction: { es: "Extinguiendo", en: "Extinguishing", pt: "Extinção", it: "Spegnimento" },
+                battery: {
+                    percent100: { es: "Bateria 100%", en: "Battery 100%", pt: "Bateria 100%", it: "Batteria 100%" },
+                    percent75: { es: "Bateria 75%", en: "Battery 75%", pt: "Bateria 75%", it: "Batteria 75%" },
+                    percent50: { es: "Bateria 50%", en: "Battery 50%", pt: "Bateria 50%", it: "Batteria 50%" },
+                    percent25: { es: "Bateria 25%", en: "Battery 25%", pt: "Bateria 25%", it: "Batteria 25%" },
+                    fault: { es: "Bateria Falla", en: "Battery fault", pt: "Bateria falha", it: "Batteria macanza" }
+                },
+                power: {
+                    normal: { es: "220 OK", en: "220 OK", pt: "220 OK", it: "220 OK" },
+                    fault: { es: "220 Falla", en: "220 fault", pt: "220 falha", it: "220 macanza" }
+                },
+                network: {
+                    normal: { es: "WiFi", en: "WiFi", pt: "WiFi", it: "WiFi" },
+                    fault: { es: "No WiFi", en: "Not WiFi", pt: "não WiFi", it: "Non WiFi" }
+                }
+            },
+            main: {
+                lineAndInputNormalization: { es: "Lineas y entradas normalizadas", en: "Line and input normalization", pt: "Normalização de linhas e entradas", it: "Normalizzazione di linee e ingressi" },
+                buttons: {
+                    acknowledge: { es: "Aceptacion", en: "Acknowledge", pt: "Reconhecimento", it: "Aceptazione" },
+                    reset: { es: "Reset", en: "Reset", pt: "Reiniciar", it: "Ripristina" },
+                    test: { es: "Test", en: "Test", pt: "Teste", it: "Test" },
+                },
+                bar: {
+                    line: {
+                        name: { es: "Linea ", en: "Line ", pt: "Linha ", it: "Linea " },
+                        status: {
+                            es: statusLyE.es.map((value, index) => [0, 2, 3, 4, 6, 7, 8].includes(index) ? value : null),
+                            en: statusLyE.en.map((value, index) => [0, 2, 3, 4, 6, 7, 8].includes(index) ? value : null),
+                            pt: statusLyE.pt.map((value, index) => [0, 2, 3, 4, 6, 7, 8].includes(index) ? value : null),
+                            it: statusLyE.pt.map((value, index) => [0, 2, 3, 4, 6, 7, 8].includes(index) ? value : null)
+                        }
+                    },
+                    input: {
+                        name: { es: "Entrada ", en: "IN", pt: "IN", it: "IN" },
+                        status: {
+                            es: statusLyE.es.map((value, index) => [0, 1, 4, 5, 8, 9, 10, 11, 12].includes(index) ? value : null),
+                            en: statusLyE.en.map((value, index) => [0, 1, 4, 5, 8, 9, 10, 11, 12].includes(index) ? value : null),
+                            pt: statusLyE.pt.map((value, index) => [0, 1, 4, 5, 8, 9, 10, 11, 12].includes(index) ? value : null),
+                            it: statusLyE.it.map((value, index) => [0, 1, 4, 5, 8, 9, 10, 11, 12].includes(index) ? value : null)
+                        }
+                    },
+                    test: { es: "<strong>Test</strong> Activado", en: "<strong>Test</strong> Activated", pt: "<strong>Teste</strong> Ativado", it: "<strong>Test</strong> Attivato" }
+                }
+            },
+        };
+
+
+        // Left container icons - conditional rendering
+        function createIcon(src, alt) {
+            const icon = document.createElement('img');
+            icon.className = 'icon';
+            icon.src = src;
+            icon.alt = alt;
+            return icon;
+        }
+
+        // Battery icon rendering
+        function renderBatteryIcon(battery) {
+            const iconContainer = document.createElement('img');
+            iconContainer.className = 'icon';
+
+            if (battery === 100) {
+                iconContainer.src = 'assets/icons/battery100.svg';
+                iconContainer.alt = dictionary.statusBar.battery.percent100[language];
+            } else if (battery >= 75) {
+                iconContainer.src = 'assets/icons/battery75.svg';
+                iconContainer.alt = dictionary.statusBar.battery.percent75[language];
+            } else if (battery >= 50) {
+                iconContainer.src = 'assets/icons/battery50.svg';
+                iconContainer.alt = dictionary.statusBar.battery.percent50[language];
+            } else if (battery <= 25 && battery > 1) {
+                iconContainer.src = 'assets/icons/battery25.svg';
+                iconContainer.alt = dictionary.statusBar.battery.percent25[language];
+            } else {
+                iconContainer.src = 'assets/icons/batteryfault.svg';
+                iconContainer.alt = dictionary.statusBar.battery.fault[language];
+            }
+
+            return iconContainer;
+        }
+
+        // Power supply icon rendering
+        function renderPowerSupplyIcon(powerSupply) {
+            const iconContainer = document.createElement('img');
+            iconContainer.className = 'icon';
+
+            if (powerSupply) {
+                iconContainer.src = 'assets/icons/powersupplynormal.svg';
+                iconContainer.alt = dictionary.statusBar.power.normal[language];
+            } else {
+                iconContainer.src = 'assets/icons/powersupplyfault.svg';
+                iconContainer.alt = dictionary.statusBar.power.fault[language];
+            }
+
+            return iconContainer;
+        }
+
+        // Network icon rendering
+        function renderNetworkIcon(network) {
+            const iconContainer = document.createElement('img');
+            iconContainer.className = 'icon';
+
+            if (network) {
+                iconContainer.src = 'assets/icons/networknormal.svg';
+                iconContainer.alt = dictionary.statusBar.network.normal[language];
+            } else {
+                iconContainer.src = 'assets/icons/networkfault.svg';
+                iconContainer.alt = dictionary.statusBar.network.fault[language];
+            }
+
+            return iconContainer;
+        }
+
+        // Update status bar icons
+        function updateStatusBarIcons(statusData) {
+            // Update left container
+            const leftContainer = document.querySelector('.icon-container.left');
+            if (leftContainer) {
+                leftContainer.innerHTML = '';
+                
+                if (statusData.alarm) {
+                    leftContainer.appendChild(createIcon('assets/icons/bell.svg', dictionary.statusBar.alarm[language]));
+                }
+                if (statusData.fault) {
+                    leftContainer.appendChild(createIcon('assets/icons/fault.svg', dictionary.statusBar.fault[language]));
+                }
+                if (statusData.disconnect) {
+                    leftContainer.appendChild(createIcon('assets/icons/disconnect.svg', dictionary.statusBar.disconnect[language]));
+                }
+                if (statusData.ground) {
+                    leftContainer.appendChild(createIcon('assets/icons/groundconnection.svg', dictionary.statusBar.ground[language]));
+                }
+                if (statusData.test) {
+                    leftContainer.appendChild(createIcon('assets/icons/test.svg', dictionary.statusBar.test[language]));
+                }
+                if (statusData.extinction) {
+                    leftContainer.appendChild(createIcon('assets/icons/extinction.png', dictionary.statusBar.extinction[language]));
+                }
+            }
+
+            // Update right container
+            const rightContainer = document.querySelector('.icon-container.right');
+            if (rightContainer) {
+                rightContainer.innerHTML = '';
+                rightContainer.appendChild(renderBatteryIcon(statusData.battery));
+                rightContainer.appendChild(renderPowerSupplyIcon(statusData.powerSupply));
+                rightContainer.appendChild(renderNetworkIcon(statusData.network));
+            }
+        }
+
+        // Wait for DOM to be loaded before executing
+        document.addEventListener('DOMContentLoaded', function () {
+            // Example usage
+            const statusData = {
+                // Left container
+                alarm: true,
+                fault: true,
+                disconnect: true,
+                ground: true,
+                test: true,
+                extinction: true,
+                // Right container
+                battery: 85,
+                powerSupply: true,
+                network: true
+            };
+            document.getElementById('generalDataName').textContent = "CDI WIDGET"; // Set device name
+
+            updateStatusBarIcons(statusData);
+        });
+    </script>
+    <style>
+        html,
+        body,
+        div {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-family: Arial;
+        }
+
+        main {
+            height: calc(100vh - 36px);
+            overflow: auto;
+            overflow-y: scroll;
+        }
+
+        p {
+            margin: 0px;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* GENERALES */
+        main.row {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .bar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 4px 8px;
+            width: 100%;
+            overflow-y: scroll;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-header-title {
+            display: flex;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0px;
+            padding-left: 4px;
+            color: white;
+            text-align: center;
+        }
+
+        /* GENERALES */
+
+        /* NAVBAR */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            padding: 0;
+            background-color: whitesmoke;
+        }
+
+        .icon-container {
+            display: flex;
+            flex-wrap: wrap;
+            min-width: 25vw;
+        }
+
+        .icon-container.right {
+            justify-content: flex-end;
+        }
+
+        .icon-container.left {
+            justify-content: flex-start;
+        }
+
+        .icon {
+            height: 28px;
+            width: auto;
+            padding: 4px;
+        }
+
+        .nombre {
+            color: #FE001A;
+            font-size: 24px;
+            padding: 4px;
+            margin: 0;
+        }
+
+        /* NAVBAR */
+
+        /* ESTILO BOTONES */
+        .barbutton {
+            height: 100%;
+            width: 100%;
+            /* width: 50px; */
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .barbutton img {
+            height: 32px;
+            width: auto;
+            margin: 4px;
+        }
+
+        .barbutton span {
+            font-size: 14px;
+        }
+
+        /* ESTILO BOTONES */
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="status-bar">
+            <div class="icon-container left">
+                <!-- Icons will be dynamically rendered here -->
+            </div>
+            <h1 class="nombre" id="generalDataName"></h1>
+            <div class="icon-container right">
+                <!-- Icons will be dynamically rendered here -->
+            </div>
+        </nav>
+    </header>
+    <main style="background-color: grey;" class="row">
+        @if (lines.length === 0 && inputs.length === 0) {
+        <div class="bar-container" style="align-items: center; justify-content: center;">
+            <h3 class="main-header-title">{{ dictionary.main.lineAndInputNormalization[language] }}</h3>
+        </div>
+        } @else {
+        <div class="bar-container">
+            <app-line-bar *ngFor="let line of orderLines(lines)" [bar]="line" type="line"></app-line-bar>
+            <app-line-bar *ngFor="let input of orderInputs(inputs)" [bar]="input" type="input"></app-line-bar>
+        </div>
+        }
+        <div class="column"
+            style="display: flex; flex-direction: column; align-items: stretch; justify-content: space-evenly; background: whitesmoke; padding: 8px;">
+            <button class="barbutton" onclick="Reset()">
+                <img src="/assets/icons/check.svg" alt="Aceptacion" />
+                <span>Aceptacion</span>
+            </button>
+            <div style="height: 2px; width: 100%; background: rgb(224, 224, 224); margin: 12px 0;"></div>
+            <button class="barbutton" onclick="Reset()">
+                <img src="/assets/icons/reset.svg" alt="Reset" />
+                <span>Reset</span>
+            </button>
+            <div style="height: 2px; width: 100%; background: rgb(224, 224, 224); margin: 12px 0;"></div>
+
+            <button class="barbutton" onclick="test()">
+                <img src="/assets/icons/test.svg" alt="Test" />
+                <span>Test</span>
+            </button>
+        </div>
+    </main>
+</body>
+
+</html>
