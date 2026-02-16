@@ -11,16 +11,16 @@
 
         const statusLyE = {
             en: [
-                "Normal", "Alarm", "Alarm 2", "Alarm 1", "Technical alarm", "Fault", "Line open", "Line in short circuit", "Disabled", "Manual Download Button MDB", "Acknowledge", "Reset", "Abort", "System initialized", "Silence siren", "Low battery", "Full battery", "Power failure", "Power OK", "Robbery"
+                "Normal", "Alarm", "Alarm", "Pre-alarm", "Technical alarm", "Fault", "Line open", "Line in short circuit", "Disabled", "Manual Download Button MDB", "Acknowledge", "Reset", "Abort", "System initialized", "Silence siren", "Low battery", "Full battery", "Power failure", "Power OK", "Robbery"
             ],
             es: [
-                "Normal", "Alarma", "Alarma 2", "Alarma 1", "Alarma Tecnica", "Falla", "Linea abierta", "Linea en corto", "Excluida", "Pulsador de Descarga Manual PDM", "Aceptacion", "Reset", "Aborto", "Sistema inicializado", "Silenciar sirena", "Bateria baja", "Bateria completa", "Falla alimentacion", "Alimentacion OK", "Robo"
+                "Normal", "Alarma", "Alarma", "Pre alarma", "Alarma Tecnica", "Falla", "Linea abierta", "Linea en corto", "Excluida", "Pulsador de Descarga Manual PDM", "Aceptacion", "Reset", "Aborto", "Sistema inicializado", "Silenciar sirena", "Bateria baja", "Bateria completa", "Falla alimentacion", "Alimentacion OK", "Robo"
             ],
             pt: [
-                "Normal", "Alarme", "Alarme 2", "Alarme 1", "Alarme Técnico", "Falha", "Linha aberta", "Linha curta", "Excluído", "Botão de download manual do PDM", "Aceitação", "Reiniciar", "Aborto", "Sistema inicializado", "Silêncio sirene", "Bateria Fraca", "Bateria cheia", "Falha de alimentação", "Alimentação OK", "Roubo"
+                "Normal", "Alarme", "Alarme", "Pré-alarme", "Alarme Técnico", "Falha", "Linha aberta", "Linha curta", "Excluído", "Botão de download manual do PDM", "Aceitação", "Reiniciar", "Aborto", "Sistema inicializado", "Silêncio sirene", "Bateria Fraca", "Bateria cheia", "Falha de alimentação", "Alimentação OK", "Roubo"
             ],
             it: [
-                "Normale", "Allarme", "Allarme 2", "Allarme 1", "Allarme tecnico", "Macanza", "Linea aperta", "Linea corta", "Escluso", "Pulsante di download manuale del PDM", "Accettazione", "Ripristina", "Aborto", "Sistema inizializzato", "Sirena del silenzio", "Batteria scarica", "Batteria carica", "Mancanza di alimentazione", "Alimentazione OK", "Rapina"
+                "Normale", "Allarme", "Allarme", "Pre-allarme", "Allarme tecnico", "Macanza", "Linea aperta", "Linea corta", "Escluso", "Pulsante di download manuale del PDM", "Accettazione", "Ripristina", "Aborto", "Sistema inizializzato", "Sirena del silenzio", "Batteria scarica", "Batteria carica", "Mancanza di alimentazione", "Alimentazione OK", "Rapina"
             ]
         };
 
@@ -134,7 +134,7 @@
                 switch (status) {
                     case 0: return 'green';
                     case 2: return 'red';
-                    case 3: return 'red';
+                    case 3: return 'orange';
                     case 4: return 'red';
                     case 6: return 'yellow';
                     case 7: return 'yellow';
