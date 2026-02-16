@@ -374,9 +374,81 @@
             }
         }
 
+        // Modal Service - manages modal state
+        const modalsService = {
+            alert: {
+                show: false,
+                title: '',
+                content: '',
+                func: null
+            },
+            loader: false
+        };
+
+        // Show alert modal
+        function showAlert(title, content, callback = null) {
+            modalsService.alert.title = title;
+            modalsService.alert.content = content;
+            modalsService.alert.func = callback;
+            modalsService.alert.show = true;
+
+            const modal = document.getElementById('alertModal');
+            const titleElement = document.getElementById('alertTitle');
+            const contentElement = document.getElementById('alertContent');
+
+            if (modal && titleElement && contentElement) {
+                titleElement.textContent = title;
+                contentElement.textContent = content;
+                modal.classList.add('show');
+            }
+        }
+
+        // Close alert modal
+        function closeAlert() {
+            if (modalsService.alert.func) {
+                modalsService.alert.func();
+            }
+
+            modalsService.alert.show = false;
+            modalsService.alert.title = '';
+            modalsService.alert.content = '';
+            modalsService.alert.func = null;
+
+            const modal = document.getElementById('alertModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // Show loader modal
+        function showLoader(text = null) {
+            modalsService.loader = true;
+            const loaderText = text || dictionary.modals.loader.header[language];
+            
+            const modal = document.getElementById('loaderModal');
+            const headerElement = document.getElementById('loaderHeader');
+
+            if (modal && headerElement) {
+                headerElement.textContent = loaderText;
+                modal.classList.add('show');
+            }
+        }
+
+        // Hide loader modal
+        function hideLoader() {
+            modalsService.loader = false;
+            
+            const modal = document.getElementById('loaderModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
         // Button functions
         async function acknowledge() {
             try {
+                showLoader();
+                
                 // Here you would call your API
                 // await fetch('/api/cmd', {
                 //     headers: { 'Content-Type': 'application/json' },
@@ -384,9 +456,20 @@
                 //     body: JSON.stringify({ cmdACK: {} })
                 // });
 
-                alert(dictionary.modals.alert.acknowledge.success.content[language]);
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                hideLoader();
+                showAlert(
+                    dictionary.modals.alert.acknowledge.success.header[language],
+                    dictionary.modals.alert.acknowledge.success.content[language]
+                );
             } catch (error) {
-                alert(dictionary.modals.alert.acknowledge.error.content[language]);
+                hideLoader();
+                showAlert(
+                    dictionary.modals.alert.acknowledge.error.header[language],
+                    dictionary.modals.alert.acknowledge.error.content[language]
+                );
             }
         }
 
@@ -394,6 +477,8 @@
             if (!isAuthenticated) return;
 
             try {
+                showLoader();
+                
                 // Here you would call your API
                 // await fetch('/api/cmd', {
                 //     headers: { 'Content-Type': 'application/json' },
@@ -401,9 +486,20 @@
                 //     body: JSON.stringify({ cmdReset: {} })
                 // });
 
-                alert(dictionary.modals.alert.reset.success.content[language]);
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                hideLoader();
+                showAlert(
+                    dictionary.modals.alert.reset.success.header[language],
+                    dictionary.modals.alert.reset.success.content[language]
+                );
             } catch (error) {
-                alert(dictionary.modals.alert.reset.error.content[language]);
+                hideLoader();
+                showAlert(
+                    dictionary.modals.alert.reset.error.header[language],
+                    dictionary.modals.alert.reset.error.content[language]
+                );
             }
         }
 
@@ -411,6 +507,8 @@
             if (!isAuthenticated) return;
 
             try {
+                showLoader();
+                
                 // Here you would call your API
                 // await fetch('/api/cmd', {
                 //     headers: { 'Content-Type': 'application/json' },
@@ -418,9 +516,20 @@
                 //     body: JSON.stringify({ cmdTest: {} })
                 // });
 
-                alert(dictionary.modals.alert.test.success.content[language]);
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                hideLoader();
+                showAlert(
+                    dictionary.modals.alert.test.success.header[language],
+                    dictionary.modals.alert.test.success.content[language]
+                );
             } catch (error) {
-                alert(dictionary.modals.alert.test.error.content[language]);
+                hideLoader();
+                showAlert(
+                    dictionary.modals.alert.test.error.header[language],
+                    dictionary.modals.alert.test.error.content[language]
+                );
             }
         }
 
@@ -675,6 +784,103 @@
         }
 
         /* ESTILO BARRAS */
+
+        /* MODAL STYLES */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: #dddee1;
+            border: 1px solid #d3d5d8;
+            border-radius: 10px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 24px;
+        }
+
+        .modal-content.alert {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-between;
+            height: 160px;
+            width: 420px;
+            top: 25%;
+        }
+
+        .modal-content.loader-modal {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .modal-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f9fa;
+            margin: 4px;
+            border: 2px solid black;
+            border-radius: 8px;
+            font-size: 20px;
+            height: 48px;
+            width: 84px;
+            cursor: pointer;
+        }
+
+        .modal-button:hover {
+            background-color: #e2e6ea;
+        }
+
+        .modal-header {
+            font-size: 40px;
+            margin: 0px;
+        }
+
+        .modal-row {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Loader spinner styles */
+        .spinner-loader {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            animation: spin 1s linear infinite;
+        }
+
+        .spinner-loader.big {
+            width: 48px;
+            height: 48px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        /* END MODAL STYLES */
     </style>
 </head>
 
@@ -711,6 +917,37 @@
             </button>
         </div>
     </main>
+
+    <!-- Alert Modal -->
+    <div id="alertModal" class="modal">
+        <div class="modal-content alert">
+            <div>
+                <div>
+                    <h3 class="modal-header" id="alertTitle"></h3>
+                </div>
+                <div>
+                    <p id="alertContent"></p>
+                </div>
+            </div>
+            <div class="modal-row">
+                <button class="modal-button" onclick="closeAlert()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loader Modal -->
+    <div id="loaderModal" class="modal">
+        <div class="modal-content loader-modal">
+            <div>
+                <h3 class="modal-header" id="loaderHeader"></h3>
+            </div>
+            <div style="display: flex; justify-content: center;">
+                <div style="width: 48px;">
+                    <div class="spinner-loader big"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
