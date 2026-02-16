@@ -9,6 +9,73 @@
         const language = 'es'; // This would be dynamically set based on user preference or system settings
         let isAuthenticated = false;
 
+        // Configuration variables
+        let apiDomain = '';
+        let userId = '';
+        let userCode = '';
+
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Function to authenticate user
+        async function authenticateUser() {
+            if (!apiDomain || !userId || !userCode) {
+                console.log('Missing authentication parameters');
+                return false;
+            }
+
+            try {
+                // Call authentication endpoint
+                const response = await fetch(`${apiDomain}/api/config/usuarios`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }).then((res) => res.json());
+
+                const users = JSON.parse(atob(response.USR))
+
+                const user = users.find((user) => user.id === userId && user.code === userCode);
+
+                if (user) {
+                    isAuthenticated = true;
+                    console.log('User authenticated successfully');
+                    return true;
+                }
+
+                console.log('Authentication failed');
+                return false;
+            } catch (error) {
+                console.error('Authentication error:', error);
+                return false;
+            }
+        }
+
+        // Initialize configuration from URL parameters
+        function initializeConfig() {
+            apiDomain = getUrlParameter('apiDomain') || '';
+            userId = Number(getUrlParameter('userId')) || '';
+            userCode = getUrlParameter('code') || '';
+
+            console.log('Configuration initialized:', {
+                apiDomain: apiDomain || 'Not set',
+                userId: userId || 'Not set',
+                hasCode: !!userCode
+            });
+
+            // Authenticate if credentials are provided
+            if (apiDomain && userId && userCode) {
+                authenticateUser().then(authenticated => {
+                    if (authenticated) {
+                        updateButtons();
+                    }
+                });
+            }
+        }
+
         const statusLyE = {
             en: [
                 "Normal", "Alarm", "Alarm", "Pre-alarm", "Technical alarm", "Fault", "Line open", "Line in short circuit", "Disabled", "Manual Download Button MDB", "Acknowledge", "Reset", "Abort", "System initialized", "Silence siren", "Low battery", "Full battery", "Power failure", "Power OK", "Robbery"
@@ -232,11 +299,15 @@
         }
 
         function orderLines(lines) {
-            return lines.sort((a, b) => a.number - b.number);
+            // return lines.sort((a, b) => a.number - b.number);
+            const customOrder = { 2: 0, 3: 1, 4: 2, 6: 3, 7: 4, 8: 5, 0: 6 };
+            return [...lines].sort((a, b) => (customOrder[a.status] ?? 99) - (customOrder[b.status] ?? 99));
         }
 
         function orderInputs(inputs) {
-            return inputs.sort((a, b) => a.number - b.number);
+            // return inputs.sort((a, b) => a.number - b.number);
+            const customOrder = { 12: 0, 9: 1, 1: 2, 4: 3, 5: 4, 0: 5 };
+            return [...inputs].sort((a, b) => (customOrder[a.status] ?? 99) - (customOrder[b.status] ?? 99));
         }
 
         function renderBars(lines, inputs) {
@@ -344,22 +415,22 @@
             if (leftContainer) {
                 leftContainer.innerHTML = '';
 
-                if (statusData.alarm) {
+                if (statusData['ALARMA']) {
                     leftContainer.appendChild(createIcon('assets/icons/bell.svg', dictionary.statusBar.alarm[language]));
                 }
-                if (statusData.fault) {
+                if (statusData['FALLA']) {
                     leftContainer.appendChild(createIcon('assets/icons/fault.svg', dictionary.statusBar.fault[language]));
                 }
-                if (statusData.disconnect) {
+                if (statusData['DESCONEXION']) {
                     leftContainer.appendChild(createIcon('assets/icons/disconnect.svg', dictionary.statusBar.disconnect[language]));
                 }
-                if (statusData.ground) {
+                if (statusData['TIERRA']) {
                     leftContainer.appendChild(createIcon('assets/icons/groundconnection.svg', dictionary.statusBar.ground[language]));
                 }
-                if (statusData.test) {
+                if (statusData['TEST']) {
                     leftContainer.appendChild(createIcon('assets/icons/test.svg', dictionary.statusBar.test[language]));
                 }
-                if (statusData.extinction) {
+                if (statusData['EXTINCION']) {
                     leftContainer.appendChild(createIcon('assets/icons/extinction.png', dictionary.statusBar.extinction[language]));
                 }
             }
@@ -368,9 +439,10 @@
             const rightContainer = document.querySelector('.icon-container.right');
             if (rightContainer) {
                 rightContainer.innerHTML = '';
-                rightContainer.appendChild(renderBatteryIcon(statusData.battery));
-                rightContainer.appendChild(renderPowerSupplyIcon(statusData.powerSupply));
-                rightContainer.appendChild(renderNetworkIcon(statusData.network));
+
+                rightContainer.appendChild(renderBatteryIcon(statusData['BATERIA']));
+                rightContainer.appendChild(renderPowerSupplyIcon(statusData['ALIMENTACION']));
+                rightContainer.appendChild(renderNetworkIcon(statusData['RED']));
             }
         }
 
@@ -424,7 +496,7 @@
         function showLoader(text = null) {
             modalsService.loader = true;
             const loaderText = text || dictionary.modals.loader.header[language];
-            
+
             const modal = document.getElementById('loaderModal');
             const headerElement = document.getElementById('loaderHeader');
 
@@ -437,7 +509,7 @@
         // Hide loader modal
         function hideLoader() {
             modalsService.loader = false;
-            
+
             const modal = document.getElementById('loaderModal');
             if (modal) {
                 modal.classList.remove('show');
@@ -448,17 +520,20 @@
         async function acknowledge() {
             try {
                 showLoader();
-                
-                // Here you would call your API
-                // await fetch('/api/cmd', {
-                //     headers: { 'Content-Type': 'application/json' },
-                //     method: 'POST',
-                //     body: JSON.stringify({ cmdACK: {} })
-                // });
 
-                // Simulate API call delay
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
+                if (apiDomain) {
+                    const response = await fetch(`${apiDomain}/api/cmd`, {
+                        headers: { 'Content-Type': 'application/json' },
+                        method: 'POST',
+                        body: JSON.stringify({ cmdACK: {} })
+                    });
+
+                    if (!response.ok) throw new Error('Command failed');
+                } else {
+                    // Simulate API call delay for demo
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+
                 hideLoader();
                 showAlert(
                     dictionary.modals.alert.acknowledge.success.header[language],
@@ -478,17 +553,20 @@
 
             try {
                 showLoader();
-                
-                // Here you would call your API
-                // await fetch('/api/cmd', {
-                //     headers: { 'Content-Type': 'application/json' },
-                //     method: 'POST',
-                //     body: JSON.stringify({ cmdReset: {} })
-                // });
 
-                // Simulate API call delay
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
+                if (apiDomain) {
+                    const response = await fetch(`${apiDomain}/api/cmd`, {
+                        headers: { 'Content-Type': 'application/json' },
+                        method: 'POST',
+                        body: JSON.stringify({ cmdReset: {} })
+                    });
+
+                    if (!response.ok) throw new Error('Command failed');
+                } else {
+                    // Simulate API call delay for demo
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+
                 hideLoader();
                 showAlert(
                     dictionary.modals.alert.reset.success.header[language],
@@ -508,17 +586,20 @@
 
             try {
                 showLoader();
-                
-                // Here you would call your API
-                // await fetch('/api/cmd', {
-                //     headers: { 'Content-Type': 'application/json' },
-                //     method: 'POST',
-                //     body: JSON.stringify({ cmdTest: {} })
-                // });
 
-                // Simulate API call delay
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
+                if (apiDomain) {
+                    const response = await fetch(`${apiDomain}/api/cmd`, {
+                        headers: { 'Content-Type': 'application/json' },
+                        method: 'POST',
+                        body: JSON.stringify({ cmdTest: {} })
+                    });
+
+                    if (!response.ok) throw new Error('Command failed');
+                } else {
+                    // Simulate API call delay for demo
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+
                 hideLoader();
                 showAlert(
                     dictionary.modals.alert.test.success.header[language],
@@ -552,22 +633,141 @@
             }
         }
 
+        // API Functions
+        async function fetchBarStatus() {
+            if (!apiDomain) {
+                console.log('API Domain not configured');
+                return null;
+            }
+
+            try {
+                const response = await fetch(`${apiDomain}/api/barstatus`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    return await response.json();
+                }
+
+                console.error('Error fetching bar status');
+                return null;
+            } catch (error) {
+                console.error('Error fetching bar status:', error);
+                return null;
+            }
+        }
+
+        async function fetchLinesStatus() {
+            if (!apiDomain) {
+                console.log('API Domain not configured');
+                return null;
+            }
+
+            try {
+                const response = await fetch(`${apiDomain}/api/linesstatus`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    return await response.json();
+                }
+
+                console.error('Error fetching lines status');
+                return null;
+            } catch (error) {
+                console.error('Error fetching lines status:', error);
+                return null;
+            }
+        }
+
+        async function fetchGeneralConfig() {
+            if (!apiDomain) {
+                console.log('API Domain not configured');
+                return null;
+            }
+
+            try {
+                const response = await fetch(`${apiDomain}/api/config/general`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    return await response.json();
+                }
+
+                console.error('Error fetching general config');
+                return null;
+            } catch (error) {
+                console.error('Error fetching general config:', error);
+                return null;
+            }
+        }
+
+        // Function to load data from API
+        async function loadDataFromAPI() {
+            // showLoader();
+
+            try {
+                const [barStatus, linesStatus, generalConfig] = await Promise.all([
+                    fetchBarStatus(),
+                    fetchLinesStatus(),
+                    fetchGeneralConfig()
+                ]);
+
+                if (generalConfig && generalConfig.cfgGeneral && generalConfig.cfgGeneral['NAME']) {
+                    document.getElementById('generalDataName').textContent = generalConfig.cfgGeneral['NAME'];
+                }
+
+                if (linesStatus && linesStatus['LINEAS'] && linesStatus['ENTRADAS']) {
+                    const lines = linesStatus['LINEAS']
+                        .filter((line) => line.status !== 0); // Filter out normal status lines to reduce API noise
+                    const inputs = linesStatus['ENTRADAS']
+                        .filter((input) => input.status !== 0); // Filter out normal status inputs to reduce API noise
+
+                    if (barStatus && barStatus.barstatus) {
+                        updateStatusBarIcons(barStatus.barstatus);
+                    }
+
+                    if (lines && inputs) {
+                        renderBars(lines, inputs);
+                    }
+                }
+
+                // hideLoader();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                // hideLoader();
+            }
+        }
+
         // Wait for DOM to be loaded before executing
         document.addEventListener('DOMContentLoaded', function () {
-            // Example data
+            // Initialize configuration from URL parameters
+            initializeConfig();
+
+            // Example data (used when API is not configured)
             const installationName = "CDI WIDGET";
             const statusData = {
-                // Left container
-                alarm: true,
-                fault: true,
-                disconnect: true,
-                ground: true,
-                test: true,
-                extinction: true,
-                // Right container
-                battery: 85,
-                powerSupply: true,
-                network: true
+                "ALARMA": true,
+                "FALLA": true,
+                "DESCONEXION": true,
+                "TIERRA": true,
+                "TEST": true,
+                "BATERIA": 100,
+                "ALIMENTACION": true,
+                "RED": true,
+                "EXTINCION": true,
+                "SIREN": true,
+                "FIRMWARE": 1000
             };
             const lines = [
                 { status: 0, number: 1, alias: 'LINEA 1', enable: 1 },
@@ -588,9 +788,20 @@
                 { status: 12, number: 7, alias: 'ENTRADA 7', enable: 1 },
             ];
 
-            document.getElementById('generalDataName').textContent = installationName; // Set device name
-            updateStatusBarIcons(statusData);
-            renderBars(lines, inputs);
+            // Check if API is configured
+            if (apiDomain) {
+                // Load data from API
+                loadDataFromAPI();
+
+                // Set up polling to refresh data every 2,5 seconds
+                setInterval(loadDataFromAPI, 2500);
+            } else {
+                // Use example data
+                document.getElementById('generalDataName').textContent = installationName;
+                updateStatusBarIcons(statusData);
+                renderBars(lines, inputs);
+            }
+
             updateButtons();
         });
     </script>
@@ -876,10 +1087,12 @@
             0% {
                 transform: rotate(0deg);
             }
+
             100% {
                 transform: rotate(360deg);
             }
         }
+
         /* END MODAL STYLES */
     </style>
 </head>
@@ -902,17 +1115,17 @@
         </div>
         <div class="column button-container">
             <button class="barbutton" id="acknowledgeBtn" onclick="acknowledge()">
-                <img src="/assets/icons/check.svg" alt="Acknowledge" />
+                <img src="assets/icons/check.svg" alt="Acknowledge" />
                 <span></span>
             </button>
             <div class="buttons-separator"></div>
             <button class="barbutton" id="resetBtn" onclick="reset()" disabled>
-                <img src="/assets/icons/reset.svg" alt="Reset" />
+                <img src="assets/icons/reset.svg" alt="Reset" />
                 <span></span>
             </button>
             <div class="buttons-separator"></div>
             <button class="barbutton" id="testBtn" onclick="test()" disabled>
-                <img src="/assets/icons/test.svg" alt="Test" />
+                <img src="assets/icons/test.svg" alt="Test" />
                 <span></span>
             </button>
         </div>

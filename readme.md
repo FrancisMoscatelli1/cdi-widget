@@ -23,6 +23,11 @@ cd cdi2-widget
 2. Abri archivo `index.html` en tu navegador para ver el widget en acción.:
 
 
+para hacer test:
+
+file:///C:/Users/fmosc/Documentos/Clients/EFAISA/CODE/cdi-widget/index.html?apiDomain=http://localhost:3001&userId=2&code=2222
+
+
 ## Configuración
 
 ### API Domain
