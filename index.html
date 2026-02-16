@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CDI2 WIDGET</title>
     <script>
-        const language = 'es'; // This would be dynamically set based on user preference or system settings
         let isAuthenticated = false;
-
+        
         // Configuration variables
+        let language = 'es';
         let apiDomain = '';
         let userId = '';
         let userCode = '';
@@ -59,11 +59,13 @@
             apiDomain = getUrlParameter('apiDomain') || '';
             userId = Number(getUrlParameter('userId')) || '';
             userCode = getUrlParameter('code') || '';
+            language = getUrlParameter('language') || 'es';
 
             console.log('Configuration initialized:', {
                 apiDomain: apiDomain || 'Not set',
                 userId: userId || 'Not set',
-                hasCode: !!userCode
+                hasCode: !!userCode,
+                language: language
             });
 
             // Authenticate if credentials are provided
