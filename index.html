@@ -14,6 +14,12 @@
         let userId = '';
         let userCode = '';
 
+        // Previous status to prevent unnecessary re-renders
+        let previousBarStatusData = null;
+        let previousLinesData = null;
+        let previousInputsData = null;
+        let previousInstallationName = null;
+
         // Function to get URL parameters
         function getUrlParameter(name) {
             const urlParams = new URLSearchParams(window.location.search);
@@ -313,6 +319,14 @@
         }
 
         function renderBars(lines, inputs) {
+            // Check if bars have changed
+            const linesString = JSON.stringify(lines);
+            const inputsString = JSON.stringify(inputs);
+            
+            if (previousLinesData === linesString && previousInputsData === inputsString) {
+                return; // No changes, skip update
+            }
+
             const mainContainer = document.querySelector('.bar-container');
             if (!mainContainer) return;
 
@@ -342,6 +356,10 @@
                     if (barElement) mainContainer.appendChild(barElement);
                 });
             }
+
+            // Save current state
+            previousLinesData = linesString;
+            previousInputsData = inputsString;
         }
 
         // Left container icons - conditional rendering
@@ -411,28 +429,33 @@
         }
 
         // Update status bar icons
-        function updateStatusBarIcons(statusData) {
+        function updateStatusBarIcons(barStatusData) {
+            // Check if status has changed
+            if (previousBarStatusData && JSON.stringify(barStatusData) === JSON.stringify(previousBarStatusData)) {
+                return; // No changes, skip update
+            }
+
             // Update left container
             const leftContainer = document.querySelector('.icon-container.left');
             if (leftContainer) {
                 leftContainer.innerHTML = '';
 
-                if (statusData['ALARMA']) {
+                if (barStatusData['ALARMA']) {
                     leftContainer.appendChild(createIcon('assets/icons/bell.svg', dictionary.statusBar.alarm[language]));
                 }
-                if (statusData['FALLA']) {
+                if (barStatusData['FALLA']) {
                     leftContainer.appendChild(createIcon('assets/icons/fault.svg', dictionary.statusBar.fault[language]));
                 }
-                if (statusData['DESCONEXION']) {
+                if (barStatusData['DESCONEXION']) {
                     leftContainer.appendChild(createIcon('assets/icons/disconnect.svg', dictionary.statusBar.disconnect[language]));
                 }
-                if (statusData['TIERRA']) {
+                if (barStatusData['TIERRA']) {
                     leftContainer.appendChild(createIcon('assets/icons/groundconnection.svg', dictionary.statusBar.ground[language]));
                 }
-                if (statusData['TEST']) {
+                if (barStatusData['TEST']) {
                     leftContainer.appendChild(createIcon('assets/icons/test.svg', dictionary.statusBar.test[language]));
                 }
-                if (statusData['EXTINCION']) {
+                if (barStatusData['EXTINCION']) {
                     leftContainer.appendChild(createIcon('assets/icons/extinction.png', dictionary.statusBar.extinction[language]));
                 }
             }
@@ -442,10 +465,13 @@
             if (rightContainer) {
                 rightContainer.innerHTML = '';
 
-                rightContainer.appendChild(renderBatteryIcon(statusData['BATERIA']));
-                rightContainer.appendChild(renderPowerSupplyIcon(statusData['ALIMENTACION']));
-                rightContainer.appendChild(renderNetworkIcon(statusData['RED']));
+                rightContainer.appendChild(renderBatteryIcon(barStatusData['BATERIA']));
+                rightContainer.appendChild(renderPowerSupplyIcon(barStatusData['ALIMENTACION']));
+                rightContainer.appendChild(renderNetworkIcon(barStatusData['RED']));
             }
+
+            // Save current status
+            previousBarStatusData = JSON.parse(JSON.stringify(barStatusData));
         }
 
         // Modal Service - manages modal state
@@ -726,7 +752,11 @@
                 ]);
 
                 if (generalConfig && generalConfig.cfgGeneral && generalConfig.cfgGeneral['NAME']) {
-                    document.getElementById('generalDataName').textContent = generalConfig.cfgGeneral['NAME'];
+                    const newName = generalConfig.cfgGeneral['NAME'];
+                    if (newName !== previousInstallationName) {
+                        document.getElementById('generalDataName').textContent = newName;
+                        previousInstallationName = newName;
+                    }
                 }
 
                 if (linesStatus && linesStatus['LINEAS'] && linesStatus['ENTRADAS']) {
@@ -758,7 +788,7 @@
 
             // Example data (used when API is not configured)
             const installationName = "CDI WIDGET";
-            const statusData = {
+            const barStatusData = {
                 "ALARMA": true,
                 "FALLA": true,
                 "DESCONEXION": true,
@@ -800,7 +830,7 @@
             } else {
                 // Use example data
                 document.getElementById('generalDataName').textContent = installationName;
-                updateStatusBarIcons(statusData);
+                updateStatusBarIcons(barStatusData);
                 renderBars(lines, inputs);
             }
 
