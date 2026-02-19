@@ -17,7 +17,7 @@
 <header ng-if="isConfigured()">
     <nav class="status-bar">
         <div class="icon-container left">
-            <img ng-repeat="icon in getStatusBarIconsLeft()" 
+            <img ng-repeat="icon in statusBarIconsLeft" 
                  ng-src="{{icon.src}}" 
                  class="icon" 
                  alt="{{icon.alt}}"
@@ -27,7 +27,7 @@
         <h1 class="nombre">{{installationName}}</h1>
 
         <div class="icon-container right">
-            <img ng-repeat="icon in getStatusBarIconsRight()" 
+            <img ng-repeat="icon in statusBarIconsRight" 
                  ng-src="{{icon.src}}" 
                  class="icon" 
                  alt="{{icon.alt}}"
