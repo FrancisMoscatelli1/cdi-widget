@@ -42,6 +42,9 @@ angular.module('cdiWidget')
             $scope.statusBarIconsLeft = [];
             $scope.statusBarIconsRight = [];
 
+            // Previous barStatus to detect changes
+            var previousBarStatus = null;
+
             // Buttons state
             $scope.buttons = {
                 acknowledge: true,
@@ -62,14 +65,6 @@ angular.module('cdiWidget')
                 $scope.userId = parseInt($scope.userId || 0);
                 $scope.userCode = $scope.userCode || '';
                 $scope.language = $scope.language || CDI_CONFIG.DEFAULT_LANGUAGE;
-
-
-                console.log('Widget initialized:', {
-                    apiDomain: $scope.apiDomain || 'Not set',
-                    userId: $scope.userId || 'Not set',
-                    hasCode: !!$scope.userCode,
-                    language: $scope.language
-                });
 
                 if ($scope.apiDomain && $scope.userId && $scope.userCode) {
                     authenticate();
@@ -201,6 +196,21 @@ angular.module('cdiWidget')
              * This prevents infinite digest loops by updating arrays only when values change
              */
             function updateStatusBarIcons() {
+                // Check if barStatus actually changed
+                if (previousBarStatus && 
+                    previousBarStatus.alarm === $scope.barStatus.alarm &&
+                    previousBarStatus.fault === $scope.barStatus.fault &&
+                    previousBarStatus.disconnect === $scope.barStatus.disconnect &&
+                    previousBarStatus.ground === $scope.barStatus.ground &&
+                    previousBarStatus.test === $scope.barStatus.test &&
+                    previousBarStatus.extinction === $scope.barStatus.extinction &&
+                    previousBarStatus.battery === $scope.barStatus.battery &&
+                    previousBarStatus.powerSupply === $scope.barStatus.powerSupply &&
+                    previousBarStatus.network === $scope.barStatus.network) {
+                    // No changes, skip update
+                    return;
+                }
+
                 // Update left container icons
                 $scope.statusBarIconsLeft = [];
 
@@ -261,6 +271,9 @@ angular.module('cdiWidget')
                     { src: powerIcon, alt: powerAlt },
                     { src: networkIcon, alt: networkAlt }
                 ];
+
+                // Save current state for next comparison
+                previousBarStatus = angular.copy($scope.barStatus);
             }
 
             /**
@@ -445,73 +458,6 @@ angular.module('cdiWidget')
             $scope.closeAlert = function () {
                 $scope.alert.show = false;
             };
-
-            /**
-             * Update cached icon arrays
-             * This prevents infinite digest loops by updating arrays only when values change
-             */
-            function updateStatusBarIcons() {
-                // Update left container icons
-                $scope.statusBarIconsLeft = [];
-
-                if ($scope.barStatus.alarm) {
-                    $scope.statusBarIconsLeft.push({ src: 'assets/icons/bell.svg', alt: 'Alarma' });
-                }
-                if ($scope.barStatus.fault) {
-                    $scope.statusBarIconsLeft.push({ src: 'assets/icons/fault.svg', alt: 'Falla' });
-                }
-                if ($scope.barStatus.disconnect) {
-                    $scope.statusBarIconsLeft.push({ src: 'assets/icons/disconnect.svg', alt: 'Desconexión' });
-                }
-                if ($scope.barStatus.ground) {
-                    $scope.statusBarIconsLeft.push({ src: 'assets/icons/groundconnection.svg', alt: 'Tierra' });
-                }
-                if ($scope.barStatus.test) {
-                    $scope.statusBarIconsLeft.push({ src: 'assets/icons/test.svg', alt: 'Test' });
-                }
-                if ($scope.barStatus.extinction) {
-                    $scope.statusBarIconsLeft.push({ src: 'assets/icons/extinction.png', alt: 'Extinción' });
-                }
-
-                // Update right container icons
-                const battery = $scope.barStatus.battery;
-                let batteryIcon = 'assets/icons/batteryfault.svg';
-                let batteryAlt = 'Batería: Falla';
-
-                if (battery === 100) {
-                    batteryIcon = 'assets/icons/battery100.svg';
-                    batteryAlt = 'Batería: 100%';
-                } else if (battery >= 75) {
-                    batteryIcon = 'assets/icons/battery75.svg';
-                    batteryAlt = 'Batería: 75%';
-                } else if (battery >= 50) {
-                    batteryIcon = 'assets/icons/battery50.svg';
-                    batteryAlt = 'Batería: 50%';
-                } else if (battery <= 25 && battery > 1) {
-                    batteryIcon = 'assets/icons/battery25.svg';
-                    batteryAlt = 'Batería: 25%';
-                }
-
-                const powerIcon = $scope.barStatus.powerSupply
-                    ? 'assets/icons/powersupplynormal.svg'
-                    : 'assets/icons/powersupplyfault.svg';
-                const powerAlt = $scope.barStatus.powerSupply
-                    ? 'Alimentación OK'
-                    : 'Falla de alimentación';
-
-                const networkIcon = $scope.barStatus.network
-                    ? 'assets/icons/networknormal.svg'
-                    : 'assets/icons/networkfault.svg';
-                const networkAlt = $scope.barStatus.network
-                    ? 'Red conectada'
-                    : 'Red desconectada';
-
-                $scope.statusBarIconsRight = [
-                    { src: batteryIcon, alt: batteryAlt },
-                    { src: powerIcon, alt: powerAlt },
-                    { src: networkIcon, alt: networkAlt }
-                ];
-            }
 
             // ==================== INITIALIZATION ====================
 

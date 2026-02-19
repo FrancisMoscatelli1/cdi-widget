@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDI2 WIDGET</title>
+    <script>
+        let isAuthenticated = false;
+        
+        // Configuration variables
+        let language = 'es';
+        let apiDomain = '';
+        let userId = '';
+        let userCode = '';
+
+        // Previous status to prevent unnecessary re-renders
+        let previousBarStatusData = null;
+        let previousLinesData = null;
+        let previousInputsData = null;
+        let previousInstallationName = null;
+
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Function to authenticate user
+        async function authenticateUser() {
+            if (!apiDomain || !userId || !userCode) {
+                console.log('Missing authentication parameters');
+                return false;
+            }
+
+            try {
+                // Call authentication endpoint
+                const response = await fetch(`${apiDomain}/api/config/usuarios`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }).then((res) => res.json());
+
+                const users = JSON.parse(atob(response.USR))
+
+                const user = users.find((user) => user.id === userId && user.code === userCode);
+
+                if (user) {
+                    isAuthenticated = true;
+                    console.log('User authenticated successfully');
+                    return true;
+                }
+
+                console.log('Authentication failed');
+                return false;
+            } catch (error) {
+                console.error('Authentication error:', error);
+                return false;
+            }
+        }
+
+        // Initialize configuration from URL parameters
+        function initializeConfig() {
+            apiDomain = getUrlParameter('apiDomain') || '';
+            userId = Number(getUrlParameter('userId')) || '';
+            userCode = getUrlParameter('code') || '';
+            language = getUrlParameter('language') || 'es';
+
+            console.log('Configuration initialized:', {
+                apiDomain: apiDomain || 'Not set',
+                userId: userId || 'Not set',
+                hasCode: !!userCode,
+                language: language
+            });
+
+            // Authenticate if credentials are provided
+            if (apiDomain && userId && userCode) {
+                authenticateUser().then(authenticated => {
+                    if (authenticated) {
+                        updateButtons();
+                    }
+                });
+            }
+        }
+
+        const statusLyE = {
+            en: [
+                "Normal", "Alarm", "Alarm", "Pre-alarm", "Technical alarm", "Fault", "Line open", "Line in short circuit", "Disabled", "Manual Download Button MDB", "Acknowledge", "Reset", "Abort", "System initialized", "Silence siren", "Low battery", "Full battery", "Power failure", "Power OK", "Robbery"
+            ],
+            es: [
+                "Normal", "Alarma", "Alarma", "Pre alarma", "Alarma Tecnica", "Falla", "Linea abierta", "Linea en corto", "Excluida", "Pulsador de Descarga Manual PDM", "Aceptacion", "Reset", "Aborto", "Sistema inicializado", "Silenciar sirena", "Bateria baja", "Bateria completa", "Falla alimentacion", "Alimentacion OK", "Robo"
+            ],
+            pt: [
+                "Normal", "Alarme", "Alarme", "Pré-alarme", "Alarme Técnico", "Falha", "Linha aberta", "Linha curta", "Excluído", "Botão de download manual do PDM", "Aceitação", "Reiniciar", "Aborto", "Sistema inicializado", "Silêncio sirene", "Bateria Fraca", "Bateria cheia", "Falha de alimentação", "Alimentação OK", "Roubo"
+            ],
+            it: [
+                "Normale", "Allarme", "Allarme", "Pre-allarme", "Allarme tecnico", "Macanza", "Linea aperta", "Linea corta", "Escluso", "Pulsante di download manuale del PDM", "Accettazione", "Ripristina", "Aborto", "Sistema inizializzato", "Sirena del silenzio", "Batteria scarica", "Batteria carica", "Mancanza di alimentazione", "Alimentazione OK", "Rapina"
+            ]
+        };
+
+        const dictionary = {
+            common: {
+                reset: { es: "Reiniciar", en: "Reset", pt: "Reiniciar", it: "Ripristina" },
+                manual: { es: "Manual", en: "Manual", pt: "Manual", it: "Manuale" }
+            },
+            modals: {
+                loader: {
+                    header: { es: "Cargando", en: "Loading", pt: "Carregando", it: "Caricamento" }
+                },
+                alert: {
+                    test: {
+                        success: {
+                            header: { es: "Enviado", en: "Sent", pt: "Enviado", it: "Inviato" },
+                            content: { es: "Test enviado correctamente", en: "Test sent correctly", pt: "Teste enviado corretamente", it: "Test inviato correttamente" }
+                        },
+                        error: {
+                            header: { es: "Error", en: "Error", pt: "Erro", it: "Errore" },
+                            content: { es: 'Error enviando test', en: "Error sending test", pt: "Erro ao enviar teste", it: "Errore nell'invio del test" }
+                        }
+                    },
+                    acknowledge: {
+                        success: {
+                            header: { es: "Enviado", en: "Sent", pt: "Enviado", it: "Inviato" },
+                            content: { es: "Aceptación enviado correctamente", en: "Acknowledge sent successfully", pt: "Aceitação enviada com sucesso", it: "Accettazione inviata correttamente" }
+                        },
+                        error: {
+                            header: { es: "Error", en: "Error", pt: "Erro", it: "Errore" },
+                            content: { es: 'Error enviando aceptación', en: "Error sending acknowledge", pt: "Erro ao enviar aceitação", it: "Errore nell'invio dell'accettazione" }
+                        }
+                    },
+                    reset: {
+                        success: {
+                            header: { es: "Enviado", en: "Sent", pt: "Enviado", it: "Inviato" },
+                            content: { es: "Reset enviado correctamente", en: "Reset sent successfully", pt: "Redefinição enviada com sucesso", it: "Reimpostazione inviata con successo" }
+                        },
+                        error: {
+                            header: { es: "Error", en: "Error", pt: "Erro", it: "Errore" },
+                            content: { es: 'Error enviando comando', en: "Error sending command", pt: "Erro ao enviar comando", it: "Errore nell'invio del comando" }
+                        }
+                    },
+                    acknowledgeInput: {
+                        header: { es: "Aceptacion", en: "Acknowledge", pt: "Aceitação", it: "Accettazione" },
+                        content: { es: "Entrada de aceptacion recibida", en: "Acknowledge input recived", pt: "Entrada de aceitação recebida", it: "Ingresso di accettazione ricevuto" }
+                    },
+                    resetInput: {
+                        header: { es: "Reset", en: "Reset", pt: "Redefinição", it: "Reimpostazione" },
+                        content: { es: "Reset enviado correctamente", en: "Reset input recived", pt: "Entrada de redefinição recebida", it: "Ingresso di reimpostazione ricevuto" }
+                    }
+                }
+            },
+            statusBar: {
+                alarm: { es: "Alarma General", en: "General alarm", pt: "Alarme geral", it: "Allarme generale" },
+                fault: { es: "Falla General", en: "General fault", pt: "Falha geral", it: "Macanza Generale" },
+                disconnect: { es: "Desconexion", en: "Disconnection", pt: "Desconexão", it: "Exclude" },
+                ground: { es: "Derivacion a tierra", en: "Ground connection", pt: "Desconexão", it: "Dispersione a terra" },
+                test: { es: "Test", en: "Test", pt: "Teste", it: "Test" },
+                extinction: { es: "Extinguiendo", en: "Extinguishing", pt: "Extinção", it: "Spegnimento" },
+                battery: {
+                    percent100: { es: "Bateria 100%", en: "Battery 100%", pt: "Bateria 100%", it: "Batteria 100%" },
+                    percent75: { es: "Bateria 75%", en: "Battery 75%", pt: "Bateria 75%", it: "Batteria 75%" },
+                    percent50: { es: "Bateria 50%", en: "Battery 50%", pt: "Bateria 50%", it: "Batteria 50%" },
+                    percent25: { es: "Bateria 25%", en: "Battery 25%", pt: "Bateria 25%", it: "Batteria 25%" },
+                    fault: { es: "Bateria Falla", en: "Battery fault", pt: "Bateria falha", it: "Batteria macanza" }
+                },
+                power: {
+                    normal: { es: "220 OK", en: "220 OK", pt: "220 OK", it: "220 OK" },
+                    fault: { es: "220 Falla", en: "220 fault", pt: "220 falha", it: "220 macanza" }
+                },
+                network: {
+                    normal: { es: "WiFi", en: "WiFi", pt: "WiFi", it: "WiFi" },
+                    fault: { es: "No WiFi", en: "Not WiFi", pt: "não WiFi", it: "Non WiFi" }
+                }
+            },
+            main: {
+                lineAndInputNormalization: { es: "Lineas y entradas normalizadas", en: "Line and input normalization", pt: "Normalização de linhas e entradas", it: "Normalizzazione di linee e ingressi" },
+                buttons: {
+                    acknowledge: { es: "Aceptacion", en: "Acknowledge", pt: "Reconhecimento", it: "Aceptazione" },
+                    reset: { es: "Reset", en: "Reset", pt: "Reiniciar", it: "Ripristina" },
+                    test: { es: "Test", en: "Test", pt: "Teste", it: "Test" },
+                },
+                bar: {
+                    line: {
+                        name: { es: "Linea ", en: "Line ", pt: "Linha ", it: "Linea " },
+                        status: {
+                            es: statusLyE.es.map((value, index) => [0, 2, 3, 4, 6, 7, 8].includes(index) ? value : null),
+                            en: statusLyE.en.map((value, index) => [0, 2, 3, 4, 6, 7, 8].includes(index) ? value : null),
+                            pt: statusLyE.pt.map((value, index) => [0, 2, 3, 4, 6, 7, 8].includes(index) ? value : null),
+                            it: statusLyE.pt.map((value, index) => [0, 2, 3, 4, 6, 7, 8].includes(index) ? value : null)
+                        }
+                    },
+                    input: {
+                        name: { es: "Entrada ", en: "IN", pt: "IN", it: "IN" },
+                        status: {
+                            es: statusLyE.es.map((value, index) => [0, 1, 4, 5, 8, 9, 10, 11, 12].includes(index) ? value : null),
+                            en: statusLyE.en.map((value, index) => [0, 1, 4, 5, 8, 9, 10, 11, 12].includes(index) ? value : null),
+                            pt: statusLyE.pt.map((value, index) => [0, 1, 4, 5, 8, 9, 10, 11, 12].includes(index) ? value : null),
+                            it: statusLyE.it.map((value, index) => [0, 1, 4, 5, 8, 9, 10, 11, 12].includes(index) ? value : null)
+                        }
+                    },
+                    test: { es: "<strong>Test</strong> Activado", en: "<strong>Test</strong> Activated", pt: "<strong>Teste</strong> Ativado", it: "<strong>Test</strong> Attivato" }
+                }
+            },
+        };
+
+        // Helper functions for bars
+        function getBarColor(type, status) {
+            if (type === 'line') {
+                switch (status) {
+                    case 0: return 'green';
+                    case 2: return 'red';
+                    case 3: return 'orange';
+                    case 4: return 'red';
+                    case 6: return 'yellow';
+                    case 7: return 'yellow';
+                    case 8: return 'yellow';
+                    default: return 'green';
+                }
+            } else {
+                switch (status) {
+                    case 0: return 'green';
+                    case 1: return 'red';
+                    case 4: return 'red';
+                    case 5: return 'yellow';
+                    case 8: return 'yellow';
+                    case 9: return 'red';
+                    case 12: return 'red';
+                    default: return 'green';
+                }
+            }
+        }
+
+        function getBarIcon(type, status) {
+            if (type === 'line') {
+                switch (status) {
+                    case 0: return 'assets/icons/check.svg';
+                    case 2: return 'assets/icons/bell.svg';
+                    case 3: return 'assets/icons/bell.svg';
+                    case 4: return 'assets/icons/bell.svg';
+                    case 6: return 'assets/icons/fault.svg';
+                    case 7: return 'assets/icons/fault.svg';
+                    case 8: return 'assets/icons/disconnect.svg';
+                    default: return 'assets/icons/check.svg';
+                }
+            } else {
+                switch (status) {
+                    case 0: return 'assets/icons/check.svg';
+                    case 1: return 'assets/icons/bell.svg';
+                    case 4: return 'assets/icons/bell.svg';
+                    case 5: return 'assets/icons/fault.svg';
+                    case 8: return 'assets/icons/fault.svg';
+                    case 9: return 'assets/icons/bell.svg';
+                    case 12: return 'assets/icons/bell.svg';
+                    default: return 'assets/icons/check.svg';
+                }
+            }
+        }
+
+        function getBarName(type) {
+            return type === 'line'
+                ? dictionary.main.bar.line.name[language]
+                : dictionary.main.bar.input.name[language];
+        }
+
+        function getBarStatus(type, status) {
+            if (type === 'line') {
+                return dictionary.main.bar.line.status[language][status];
+            } else {
+                return dictionary.main.bar.input.status[language][status];
+            }
+        }
+
+        function renderLineBar(bar, type) {
+            // Skip if enable !== 1
+            if (bar.enable !== 1) return null;
+
+            const barDiv = document.createElement('div');
+            barDiv.className = `bar show ${getBarColor(type, bar.status)}`;
+
+            const contentContainer = document.createElement('div');
+            contentContainer.className = 'bar-content-container';
+
+            const icon = document.createElement('img');
+            icon.className = 'icon';
+            icon.src = getBarIcon(type, bar.status);
+            icon.alt = '';
+
+            const textDiv = document.createElement('div');
+            textDiv.className = 'bar-text';
+
+            const strong = document.createElement('strong');
+            strong.textContent = `${getBarName(type)}${bar.number} ${getBarStatus(type, bar.status)}`;
+
+            const aliasDiv = document.createElement('div');
+            const aliasSpan = document.createElement('span');
+            aliasSpan.textContent = bar.alias;
+            aliasDiv.appendChild(aliasSpan);
+
+            textDiv.appendChild(strong);
+            textDiv.appendChild(aliasDiv);
+
+            contentContainer.appendChild(icon);
+            contentContainer.appendChild(textDiv);
+            barDiv.appendChild(contentContainer);
+
+            return barDiv;
+        }
+
+        function orderLines(lines) {
+            // return lines.sort((a, b) => a.number - b.number);
+            const customOrder = { 2: 0, 3: 1, 4: 2, 6: 3, 7: 4, 8: 5, 0: 6 };
+            return [...lines].sort((a, b) => (customOrder[a.status] ?? 99) - (customOrder[b.status] ?? 99));
+        }
+
+        function orderInputs(inputs) {
+            // return inputs.sort((a, b) => a.number - b.number);
+            const customOrder = { 12: 0, 9: 1, 1: 2, 4: 3, 5: 4, 0: 5 };
+            return [...inputs].sort((a, b) => (customOrder[a.status] ?? 99) - (customOrder[b.status] ?? 99));
+        }
+
+        function renderBars(lines, inputs) {
+            // Check if bars have changed
+            const linesString = JSON.stringify(lines);
+            const inputsString = JSON.stringify(inputs);
+            
+            if (previousLinesData === linesString && previousInputsData === inputsString) {
+                return; // No changes, skip update
+            }
+
+            const mainContainer = document.querySelector('.bar-container');
+            if (!mainContainer) return;
+
+            mainContainer.innerHTML = '';
+
+            if (lines.length === 0 && inputs.length === 0) {
+                mainContainer.style.alignItems = 'center';
+                mainContainer.style.justifyContent = 'center';
+                const title = document.createElement('h3');
+                title.className = 'main-header-title';
+                title.textContent = dictionary.main.lineAndInputNormalization[language];
+                mainContainer.appendChild(title);
+            } else {
+                mainContainer.style.alignItems = '';
+                mainContainer.style.justifyContent = '';
+
+                const sortedLines = orderLines(lines);
+                const sortedInputs = orderInputs(inputs);
+
+                sortedLines.forEach(line => {
+                    const barElement = renderLineBar(line, 'line');
+                    if (barElement) mainContainer.appendChild(barElement);
+                });
+
+                sortedInputs.forEach(input => {
+                    const barElement = renderLineBar(input, 'input');
+                    if (barElement) mainContainer.appendChild(barElement);
+                });
+            }
+
+            // Save current state
+            previousLinesData = linesString;
+            previousInputsData = inputsString;
+        }
+
+        // Left container icons - conditional rendering
+        function createIcon(src, alt) {
+            const icon = document.createElement('img');
+            icon.className = 'icon';
+            icon.src = src;
+            icon.alt = alt;
+            return icon;
+        }
+
+        // Battery icon rendering
+        function renderBatteryIcon(battery) {
+            const iconContainer = document.createElement('img');
+            iconContainer.className = 'icon';
+
+            if (battery === 100) {
+                iconContainer.src = 'assets/icons/battery100.svg';
+                iconContainer.alt = dictionary.statusBar.battery.percent100[language];
+            } else if (battery >= 75) {
+                iconContainer.src = 'assets/icons/battery75.svg';
+                iconContainer.alt = dictionary.statusBar.battery.percent75[language];
+            } else if (battery >= 50) {
+                iconContainer.src = 'assets/icons/battery50.svg';
+                iconContainer.alt = dictionary.statusBar.battery.percent50[language];
+            } else if (battery <= 25 && battery > 1) {
+                iconContainer.src = 'assets/icons/battery25.svg';
+                iconContainer.alt = dictionary.statusBar.battery.percent25[language];
+            } else {
+                iconContainer.src = 'assets/icons/batteryfault.svg';
+                iconContainer.alt = dictionary.statusBar.battery.fault[language];
+            }
+
+            return iconContainer;
+        }
+
+        // Power supply icon rendering
+        function renderPowerSupplyIcon(powerSupply) {
+            const iconContainer = document.createElement('img');
+            iconContainer.className = 'icon';
+
+            if (powerSupply) {
+                iconContainer.src = 'assets/icons/powersupplynormal.svg';
+                iconContainer.alt = dictionary.statusBar.power.normal[language];
+            } else {
+                iconContainer.src = 'assets/icons/powersupplyfault.svg';
+                iconContainer.alt = dictionary.statusBar.power.fault[language];
+            }
+
+            return iconContainer;
+        }
+
+        // Network icon rendering
+        function renderNetworkIcon(network) {
+            const iconContainer = document.createElement('img');
+            iconContainer.className = 'icon';
+
+            if (network) {
+                iconContainer.src = 'assets/icons/networknormal.svg';
+                iconContainer.alt = dictionary.statusBar.network.normal[language];
+            } else {
+                iconContainer.src = 'assets/icons/networkfault.svg';
+                iconContainer.alt = dictionary.statusBar.network.fault[language];
+            }
+
+            return iconContainer;
+        }
+
+        // Update status bar icons
+        function updateStatusBarIcons(barStatusData) {
+            // Check if status has changed
+            if (previousBarStatusData && JSON.stringify(barStatusData) === JSON.stringify(previousBarStatusData)) {
+                return; // No changes, skip update
+            }
+
+            // Update left container
+            const leftContainer = document.querySelector('.icon-container.left');
+            if (leftContainer) {
+                leftContainer.innerHTML = '';
+
+                if (barStatusData['ALARMA']) {
+                    leftContainer.appendChild(createIcon('assets/icons/bell.svg', dictionary.statusBar.alarm[language]));
+                }
+                if (barStatusData['FALLA']) {
+                    leftContainer.appendChild(createIcon('assets/icons/fault.svg', dictionary.statusBar.fault[language]));
+                }
+                if (barStatusData['DESCONEXION']) {
+                    leftContainer.appendChild(createIcon('assets/icons/disconnect.svg', dictionary.statusBar.disconnect[language]));
+                }
+                if (barStatusData['TIERRA']) {
+                    leftContainer.appendChild(createIcon('assets/icons/groundconnection.svg', dictionary.statusBar.ground[language]));
+                }
+                if (barStatusData['TEST']) {
+                    leftContainer.appendChild(createIcon('assets/icons/test.svg', dictionary.statusBar.test[language]));
+                }
+                if (barStatusData['EXTINCION']) {
+                    leftContainer.appendChild(createIcon('assets/icons/extinction.png', dictionary.statusBar.extinction[language]));
+                }
+            }
+
+            // Update right container
+            const rightContainer = document.querySelector('.icon-container.right');
+            if (rightContainer) {
+                rightContainer.innerHTML = '';
+
+                rightContainer.appendChild(renderBatteryIcon(barStatusData['BATERIA']));
+                rightContainer.appendChild(renderPowerSupplyIcon(barStatusData['ALIMENTACION']));
+                rightContainer.appendChild(renderNetworkIcon(barStatusData['RED']));
+            }
+
+            // Save current status
+            previousBarStatusData = JSON.parse(JSON.stringify(barStatusData));
+        }
+
+        // Modal Service - manages modal state
+        const modalsService = {
+            alert: {
+                show: false,
+                title: '',
+                content: '',
+                func: null
+            },
+            loader: false
+        };
+
+        // Show alert modal
+        function showAlert(title, content, callback = null) {
+            modalsService.alert.title = title;
+            modalsService.alert.content = content;
+            modalsService.alert.func = callback;
+            modalsService.alert.show = true;
+
+            const modal = document.getElementById('alertModal');
+            const titleElement = document.getElementById('alertTitle');
+            const contentElement = document.getElementById('alertContent');
+
+            if (modal && titleElement && contentElement) {
+                titleElement.textContent = title;
+                contentElement.textContent = content;
+                modal.classList.add('show');
+            }
+        }
+
+        // Close alert modal
+        function closeAlert() {
+            if (modalsService.alert.func) {
+                modalsService.alert.func();
+            }
+
+            modalsService.alert.show = false;
+            modalsService.alert.title = '';
+            modalsService.alert.content = '';
+            modalsService.alert.func = null;
+
+            const modal = document.getElementById('alertModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // Show loader modal
+        function showLoader(text = null) {
+            modalsService.loader = true;
+            const loaderText = text || dictionary.modals.loader.header[language];
+
+            const modal = document.getElementById('loaderModal');
+            const headerElement = document.getElementById('loaderHeader');
+
+            if (modal && headerElement) {
+                headerElement.textContent = loaderText;
+                modal.classList.add('show');
+            }
+        }
+
+        // Hide loader modal
+        function hideLoader() {
+            modalsService.loader = false;
+
+            const modal = document.getElementById('loaderModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // Button functions
+        async function acknowledge() {
+            try {
+                showLoader();
+
+                if (apiDomain) {
+                    const response = await fetch(`${apiDomain}/api/cmd`, {
+                        headers: { 'Content-Type': 'application/json' },
+                        method: 'POST',
+                        body: JSON.stringify({ cmdACK: {} })
+                    });
+
+                    if (!response.ok) throw new Error('Command failed');
+                } else {
+                    // Simulate API call delay for demo
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+
+                hideLoader();
+                showAlert(
+                    dictionary.modals.alert.acknowledge.success.header[language],
+                    dictionary.modals.alert.acknowledge.success.content[language]
+                );
+            } catch (error) {
+                hideLoader();
+                showAlert(
+                    dictionary.modals.alert.acknowledge.error.header[language],
+                    dictionary.modals.alert.acknowledge.error.content[language]
+                );
+            }
+        }
+
+        async function reset() {
+            if (!isAuthenticated) return;
+
+            try {
+                showLoader();
+
+                if (apiDomain) {
+                    const response = await fetch(`${apiDomain}/api/cmd`, {
+                        headers: { 'Content-Type': 'application/json' },
+                        method: 'POST',
+                        body: JSON.stringify({ cmdReset: {} })
+                    });
+
+                    if (!response.ok) throw new Error('Command failed');
+                } else {
+                    // Simulate API call delay for demo
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+
+                hideLoader();
+                showAlert(
+                    dictionary.modals.alert.reset.success.header[language],
+                    dictionary.modals.alert.reset.success.content[language]
+                );
+            } catch (error) {
+                hideLoader();
+                showAlert(
+                    dictionary.modals.alert.reset.error.header[language],
+                    dictionary.modals.alert.reset.error.content[language]
+                );
+            }
+        }
+
+        async function test() {
+            if (!isAuthenticated) return;
+
+            try {
+                showLoader();
+
+                if (apiDomain) {
+                    const response = await fetch(`${apiDomain}/api/cmd`, {
+                        headers: { 'Content-Type': 'application/json' },
+                        method: 'POST',
+                        body: JSON.stringify({ cmdTest: {} })
+                    });
+
+                    if (!response.ok) throw new Error('Command failed');
+                } else {
+                    // Simulate API call delay for demo
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+
+                hideLoader();
+                showAlert(
+                    dictionary.modals.alert.test.success.header[language],
+                    dictionary.modals.alert.test.success.content[language]
+                );
+            } catch (error) {
+                hideLoader();
+                showAlert(
+                    dictionary.modals.alert.test.error.header[language],
+                    dictionary.modals.alert.test.error.content[language]
+                );
+            }
+        }
+
+        function updateButtons() {
+            // Update button texts from dictionary
+            const acknowledgeBtn = document.getElementById('acknowledgeBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const testBtn = document.getElementById('testBtn');
+
+            if (acknowledgeBtn) {
+                acknowledgeBtn.querySelector('span').textContent = dictionary.main.buttons.acknowledge[language];
+            }
+            if (resetBtn) {
+                resetBtn.querySelector('span').textContent = dictionary.main.buttons.reset[language];
+                resetBtn.disabled = !isAuthenticated;
+            }
+            if (testBtn) {
+                testBtn.querySelector('span').textContent = dictionary.main.buttons.test[language];
+                testBtn.disabled = !isAuthenticated;
+            }
+        }
+
+        // API Functions
+        async function fetchBarStatus() {
+            if (!apiDomain) {
+                console.log('API Domain not configured');
+                return null;
+            }
+
+            try {
+                const response = await fetch(`${apiDomain}/api/barstatus`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    return await response.json();
+                }
+
+                console.error('Error fetching bar status');
+                return null;
+            } catch (error) {
+                console.error('Error fetching bar status:', error);
+                return null;
+            }
+        }
+
+        async function fetchLinesStatus() {
+            if (!apiDomain) {
+                console.log('API Domain not configured');
+                return null;
+            }
+
+            try {
+                const response = await fetch(`${apiDomain}/api/linesstatus`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    return await response.json();
+                }
+
+                console.error('Error fetching lines status');
+                return null;
+            } catch (error) {
+                console.error('Error fetching lines status:', error);
+                return null;
+            }
+        }
+
+        async function fetchGeneralConfig() {
+            if (!apiDomain) {
+                console.log('API Domain not configured');
+                return null;
+            }
+
+            try {
+                const response = await fetch(`${apiDomain}/api/config/general`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    return await response.json();
+                }
+
+                console.error('Error fetching general config');
+                return null;
+            } catch (error) {
+                console.error('Error fetching general config:', error);
+                return null;
+            }
+        }
+
+        // Function to load data from API
+        async function loadDataFromAPI() {
+            // showLoader();
+
+            try {
+                const [barStatus, linesStatus, generalConfig] = await Promise.all([
+                    fetchBarStatus(),
+                    fetchLinesStatus(),
+                    fetchGeneralConfig()
+                ]);
+
+                if (generalConfig && generalConfig.cfgGeneral && generalConfig.cfgGeneral['NAME']) {
+                    const newName = generalConfig.cfgGeneral['NAME'];
+                    if (newName !== previousInstallationName) {
+                        document.getElementById('generalDataName').textContent = newName;
+                        previousInstallationName = newName;
+                    }
+                }
+
+                if (linesStatus && linesStatus['LINEAS'] && linesStatus['ENTRADAS']) {
+                    const lines = linesStatus['LINEAS']
+                        .filter((line) => line.status !== 0); // Filter out normal status lines to reduce API noise
+                    const inputs = linesStatus['ENTRADAS']
+                        .filter((input) => input.status !== 0); // Filter out normal status inputs to reduce API noise
+
+                    if (barStatus && barStatus.barstatus) {
+                        updateStatusBarIcons(barStatus.barstatus);
+                    }
+
+                    if (lines && inputs) {
+                        renderBars(lines, inputs);
+                    }
+                }
+
+                // hideLoader();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                // hideLoader();
+            }
+        }
+
+        // Wait for DOM to be loaded before executing
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize configuration from URL parameters
+            initializeConfig();
+
+            // Example data (used when API is not configured)
+            const installationName = "CDI WIDGET";
+            const barStatusData = {
+                "ALARMA": true,
+                "FALLA": true,
+                "DESCONEXION": true,
+                "TIERRA": true,
+                "TEST": true,
+                "BATERIA": 100,
+                "ALIMENTACION": true,
+                "RED": true,
+                "EXTINCION": true,
+                "SIREN": true,
+                "FIRMWARE": 1000
+            };
+            const lines = [
+                { status: 0, number: 1, alias: 'LINEA 1', enable: 1 },
+                { status: 2, number: 2, alias: 'LINEA 2', enable: 1 },
+                { status: 3, number: 3, alias: 'LINEA 3', enable: 1 },
+                { status: 4, number: 4, alias: 'LINEA 4', enable: 1 },
+                { status: 6, number: 5, alias: 'LINEA 5', enable: 1 },
+                { status: 7, number: 6, alias: 'LINEA 6', enable: 1 },
+                { status: 8, number: 7, alias: 'LINEA 7', enable: 1 },
+            ];
+            const inputs = [
+                { status: 0, number: 1, alias: 'ENTRADA 1', enable: 1 },
+                { status: 1, number: 2, alias: 'ENTRADA 2', enable: 1 },
+                { status: 4, number: 3, alias: 'ENTRADA 3', enable: 1 },
+                { status: 5, number: 4, alias: 'ENTRADA 4', enable: 1 },
+                { status: 8, number: 5, alias: 'ENTRADA 5', enable: 1 },
+                { status: 9, number: 6, alias: 'ENTRADA 6', enable: 1 },
+                { status: 12, number: 7, alias: 'ENTRADA 7', enable: 1 },
+            ];
+
+            // Check if API is configured
+            if (apiDomain) {
+                // Load data from API
+                loadDataFromAPI();
+
+                // Set up polling to refresh data every 2,5 seconds
+                setInterval(loadDataFromAPI, 2500);
+            } else {
+                // Use example data
+                document.getElementById('generalDataName').textContent = installationName;
+                updateStatusBarIcons(barStatusData);
+                renderBars(lines, inputs);
+            }
+
+            updateButtons();
+        });
+    </script>
+    <style>
+        html,
+        body,
+        div {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-family: Arial;
+        }
+
+        main {
+            height: calc(100vh - 36px);
+            overflow: auto;
+            overflow-y: scroll;
+            background-color: grey;
+        }
+
+        p {
+            margin: 0px;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* GENERALES */
+        main.row {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .bar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 4px 8px;
+            width: 100%;
+            overflow-y: scroll;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-header-title {
+            display: flex;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0px;
+            padding-left: 4px;
+            color: white;
+            text-align: center;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: space-evenly;
+            background: whitesmoke;
+            padding: 8px;
+        }
+
+        /* GENERALES */
+
+        /* NAVBAR */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            padding: 0;
+            background-color: whitesmoke;
+        }
+
+        .icon-container {
+            display: flex;
+            flex-wrap: wrap;
+            min-width: 25vw;
+        }
+
+        .icon-container.right {
+            justify-content: flex-end;
+        }
+
+        .icon-container.left {
+            justify-content: flex-start;
+        }
+
+        .icon {
+            height: 28px;
+            width: auto;
+            padding: 4px;
+        }
+
+        .nombre {
+            color: #FE001A;
+            font-size: 24px;
+            padding: 4px;
+            margin: 0;
+        }
+
+        /* NAVBAR */
+
+        /* ESTILO BOTONES */
+        .barbutton {
+            height: 100%;
+            width: 100%;
+            /* width: 50px; */
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .barbutton:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .buttons-separator {
+            height: 2px;
+            width: 100%;
+            background: rgb(224, 224, 224);
+            margin: 12px 0;
+        }
+
+        .barbutton img {
+            height: 32px;
+            width: auto;
+            margin: 4px;
+        }
+
+        .barbutton span {
+            font-size: 14px;
+        }
+
+        /* ESTILO BOTONES */
+
+        /* ESTILO BARRAS */
+        .bar {
+            display: none;
+            justify-content: space-between;
+            border: 1px solid;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .bar.show {
+            display: flex;
+        }
+
+        .bar.green {
+            background-color: #d1e7dd;
+            border-color: #badbcc;
+            color: #0f5132;
+        }
+
+        .bar.red {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .bar.orange {
+            background-color: #fcd6a4;
+            border-color: #fbc784;
+            color: #7d4925;
+        }
+
+        .bar.yellow {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+            color: #856404;
+        }
+
+        .bar-content-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .bar-text {
+            font-size: 16px;
+        }
+
+        /* ESTILO BARRAS */
+
+        /* MODAL STYLES */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: #dddee1;
+            border: 1px solid #d3d5d8;
+            border-radius: 10px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 24px;
+        }
+
+        .modal-content.alert {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-between;
+            height: 160px;
+            width: 420px;
+            top: 25%;
+        }
+
+        .modal-content.loader-modal {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .modal-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f9fa;
+            margin: 4px;
+            border: 2px solid black;
+            border-radius: 8px;
+            font-size: 20px;
+            height: 48px;
+            width: 84px;
+            cursor: pointer;
+        }
+
+        .modal-button:hover {
+            background-color: #e2e6ea;
+        }
+
+        .modal-header {
+            font-size: 40px;
+            margin: 0px;
+        }
+
+        .modal-row {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Loader spinner styles */
+        .spinner-loader {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            animation: spin 1s linear infinite;
+        }
+
+        .spinner-loader.big {
+            width: 48px;
+            height: 48px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* END MODAL STYLES */
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="status-bar">
+            <div class="icon-container left">
+                <!-- Icons will be dynamically rendered here -->
+            </div>
+            <h1 class="nombre" id="generalDataName"></h1>
+            <div class="icon-container right">
+                <!-- Icons will be dynamically rendered here -->
+            </div>
+        </nav>
+    </header>
+    <main class="row">
+        <div class="bar-container">
+            <!-- Bars will be dynamically rendered here -->
+        </div>
+        <div class="column button-container">
+            <button class="barbutton" id="acknowledgeBtn" onclick="acknowledge()">
+                <img src="assets/icons/check.svg" alt="Acknowledge" />
+                <span></span>
+            </button>
+            <div class="buttons-separator"></div>
+            <button class="barbutton" id="resetBtn" onclick="reset()" disabled>
+                <img src="assets/icons/reset.svg" alt="Reset" />
+                <span></span>
+            </button>
+            <div class="buttons-separator"></div>
+            <button class="barbutton" id="testBtn" onclick="test()" disabled>
+                <img src="assets/icons/test.svg" alt="Test" />
+                <span></span>
+            </button>
+        </div>
+    </main>
+
+    <!-- Alert Modal -->
+    <div id="alertModal" class="modal">
+        <div class="modal-content alert">
+            <div>
+                <div>
+                    <h3 class="modal-header" id="alertTitle"></h3>
+                </div>
+                <div>
+                    <p id="alertContent"></p>
+                </div>
+            </div>
+            <div class="modal-row">
+                <button class="modal-button" onclick="closeAlert()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loader Modal -->
+    <div id="loaderModal" class="modal">
+        <div class="modal-content loader-modal">
+            <div>
+                <h3 class="modal-header" id="loaderHeader"></h3>
+            </div>
+            <div style="display: flex; justify-content: center;">
+                <div style="width: 48px;">
+                    <div class="spinner-loader big"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

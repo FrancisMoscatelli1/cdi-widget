@@ -31,7 +31,7 @@ angular.module('cdiWidget')
                 // Set default values from attributes
                 scope.language = scope.language || 'es';
                 
-                console.log('CDI Widget directive initialized with:', {
+                console.log('CDI Widget initialized with:', {
                     apiDomain: scope.apiDomain,
                     userId: scope.userId,
                     userCode: scope.userCode,
