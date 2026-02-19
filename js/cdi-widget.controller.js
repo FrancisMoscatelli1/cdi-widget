@@ -10,7 +10,6 @@ angular.module('cdiWidget')
             // ==================== INITIALIZATION ====================
 
             $scope.isAuthenticated = false;
-            $scope.isLoading = true;
             $scope.showLoader = false;
             $scope.loaderText = '';
 
@@ -107,8 +106,6 @@ angular.module('cdiWidget')
              * Load initial data from API
              */
             function loadInitialData() {
-                $scope.isLoading = true;
-
                 CdiWidgetService.getGeneralConfig($scope.apiDomain)
                     .then(function (config) {
                         if (config && config.cfgGeneral && config.cfgGeneral['NAME']) {
@@ -129,24 +126,22 @@ angular.module('cdiWidget')
                 CdiWidgetService.getBarStatus($scope.apiDomain)
                     .then(function (data) {
                         updateBarStatus(data.barstatus);
-                        // $scope.lines = orderLines(data.lines || []);
-                        // $scope.inputs = orderInputs(data.inputs || []);
-                        $scope.isLoading = false;
                     })
                     .catch(function (error) {
                         console.error('Error loading bar data:', error);
-                        $scope.isLoading = false;
                     });
 
                 CdiWidgetService.getLinesStatus($scope.apiDomain)
                     .then(function (data) {
-                        $scope.lines = orderLines(data['LINEAS'] || []);
-                        $scope.inputs = orderInputs(data['ENTRADAS'] || []);
-                        $scope.isLoading = false;
+                        const lines = data['LINEAS']
+                            .filter((line) => line.status !== 0); // Filter out normal status lines to reduce API noise
+                        const inputs = data['ENTRADAS']
+                            .filter((input) => input.status !== 0); // Filter out normal status inputs to reduce API noise
+                        $scope.lines = orderLines(lines || []);
+                        $scope.inputs = orderInputs(inputs || []);
                     })
                     .catch(function (error) {
                         console.error('Error loading lines data:', error);
-                        $scope.isLoading = false;
                     });
             }
 

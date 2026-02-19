@@ -1,16 +1,7 @@
 <!-- Configuration Error Message -->
 <div ng-if="!isConfigured()"
     style="padding: 30px; text-align: center; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; margin: 20px;">
-    <h3 style="color: #856404; margin-bottom: 15px;">⚠️ Widget no configurado</h3>
-    <p style="color: #856404; margin-bottom: 15px;">
-        El widget necesita los siguientes parámetros para funcionar
-    </p>
-    <code style="background: #fff; padding: 10px; border-radius: 4px; display: inline-block; color: #333;">
-        ?apiDomain=http://api.com&userId=123&code=abc&language=es
-    </code>
-    <p style="margin-top: 15px; font-size: 12px; color: #856404;">
-        O pasar los parámetros al controlador vía JavaScript
-    </p>
+    <h3 style="color: #856404;">⚠️ Widget CDI no configurado</h3>
 </div>
 
 <!-- Status Bar Header -->
@@ -34,18 +25,11 @@
 <main class="row" ng-if="isConfigured()">
 
     <!-- Bars container (Lines and Inputs) -->
-    <div class="bar-container">
-        <ng-show ng-if="isLoading">
-            <div style="text-align: center; padding: 40px;">
-                <div class="spinner-loader big"></div>
-            </div>
-        </ng-show>
-
+    <div class="bar-container" ng-class="{message: lines.length === 0 && inputs.length === 0}">
         <!-- Display bars only when not loading -->
-        <!-- <ng-show ng-if="!isLoading"> -->
         <ng-show ng-if="lines.length === 0 && inputs.length === 0">
-            <h3 class="main-header-title" style="text-align: center; color: #666; padding: 20px;">
-                Sin alarmas activas
+            <h3 class="main-header-title">
+                Lineas y entradas normalizadas
             </h3>
         </ng-show>
 
@@ -72,7 +56,6 @@
                 </div>
             </div>
         </div>
-        <!-- </ng-show> -->
     </div>
 
     <!-- Buttons container -->
