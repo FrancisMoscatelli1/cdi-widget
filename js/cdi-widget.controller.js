@@ -273,18 +273,27 @@ angular.module('cdiWidget')
              */
             $scope.getBarColor = function (type, status) {
                 if (type === 'line') {
-                    const colorMap = {
-                        0: 'green', 1: 'red', 2: 'red', 3: 'yellow',
-                        4: 'orange', 5: 'red', 6: 'red', 7: 'red',
-                        8: 'green', 9: 'orange'
-                    };
-                    return colorMap[status] || 'green';
+                    switch (status) {
+                        case 0: return 'green';
+                        case 2: return 'red';
+                        case 3: return 'orange';
+                        case 4: return 'red';
+                        case 6: return 'yellow';
+                        case 7: return 'yellow';
+                        case 8: return 'yellow';
+                        default: return 'green';
+                    }
                 } else {
-                    const colorMap = {
-                        0: 'green', 1: 'red', 4: 'yellow', 5: 'orange',
-                        9: 'orange', 12: 'red'
-                    };
-                    return colorMap[status] || 'green';
+                    switch (status) {
+                        case 0: return 'green';
+                        case 1: return 'red';
+                        case 4: return 'red';
+                        case 5: return 'yellow';
+                        case 8: return 'yellow';
+                        case 9: return 'red';
+                        case 12: return 'red';
+                        default: return 'green';
+                    }
                 }
             };
 
@@ -292,11 +301,28 @@ angular.module('cdiWidget')
              * Get bar icon path
              */
             $scope.getBarIcon = function (type, status) {
-                const basePath = 'assets/icons/';
                 if (type === 'line') {
-                    return basePath + 'line.svg';
+                    switch (status) {
+                        case 0: return 'assets/icons/check.svg';
+                        case 2: return 'assets/icons/bell.svg';
+                        case 3: return 'assets/icons/bell.svg';
+                        case 4: return 'assets/icons/bell.svg';
+                        case 6: return 'assets/icons/fault.svg';
+                        case 7: return 'assets/icons/fault.svg';
+                        case 8: return 'assets/icons/disconnect.svg';
+                        default: return 'assets/icons/check.svg';
+                    }
                 } else {
-                    return basePath + 'input.svg';
+                    switch (status) {
+                        case 0: return 'assets/icons/check.svg';
+                        case 1: return 'assets/icons/bell.svg';
+                        case 4: return 'assets/icons/bell.svg';
+                        case 5: return 'assets/icons/fault.svg';
+                        case 8: return 'assets/icons/fault.svg';
+                        case 9: return 'assets/icons/bell.svg';
+                        case 12: return 'assets/icons/bell.svg';
+                        default: return 'assets/icons/check.svg';
+                    }
                 }
             };
 
