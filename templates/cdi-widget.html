@@ -29,7 +29,7 @@
         <!-- Display bars only when not loading -->
         <ng-show ng-if="lines.length === 0 && inputs.length === 0">
             <h3 class="main-header-title">
-                Lineas y entradas normalizadas
+                {{t('main.lineAndInputNormalization')}}
             </h3>
         </ng-show>
 
@@ -63,7 +63,7 @@
         <!-- Acknowledge Button -->
         <button class="barbutton" ng-click="acknowledge()" ng-disabled="!buttons.acknowledge" type="button">
             <img src="assets/icons/check.svg" alt="Acknowledge">
-            <span>ACK</span>
+            <span>{{t('main.buttons.acknowledge')}}</span>
         </button>
 
         <div class="buttons-separator"></div>
@@ -71,7 +71,7 @@
         <!-- Reset Button -->
         <button class="barbutton" ng-click="reset()" ng-disabled="!buttons.reset" type="button">
             <img src="assets/icons/reset.svg" alt="Reset">
-            <span>Reset</span>
+            <span>{{t('main.buttons.reset')}}</span>
         </button>
 
         <div class="buttons-separator"></div>
@@ -79,7 +79,7 @@
         <!-- Test Button -->
         <button class="barbutton" ng-click="test()" ng-disabled="!buttons.test" type="button">
             <img src="assets/icons/test.svg" alt="Test">
-            <span>Test</span>
+            <span>{{t('main.buttons.test')}}</span>
         </button>
     </div>
 </main>

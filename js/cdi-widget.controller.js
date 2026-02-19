@@ -338,18 +338,37 @@ angular.module('cdiWidget')
              * Get bar name (Línea or Entrada)
              */
             $scope.getBarName = function (type) {
-                const names = { es: 'Línea', en: 'Line', pt: 'Linha' };
                 if (type === 'input') {
-                    return { es: 'Entrada', en: 'Input', pt: 'Entrada' }[$scope.language] || 'Input';
+                    return CDI_CONFIG.DICTIONARY.main.bar.input.name[$scope.language] || 'Input';
                 }
-                return names[$scope.language] || 'Line';
+                return CDI_CONFIG.DICTIONARY.main.bar.line.name[$scope.language] || 'Line';
             };
 
             /**
              * Get localized status text
              */
             $scope.getStatusText = function (status) {
-                return CDI_CONFIG.STATUSES[$scope.language][status] || 'Unknown';
+                return CDI_CONFIG.STATUS_LYE[$scope.language][status] || 'Unknown';
+            };
+
+            /**
+             * Get translation from dictionary
+             */
+            $scope.t = function (path) {
+                const keys = path.split('.');
+                let value = CDI_CONFIG.DICTIONARY;
+                for (let i = 0; i < keys.length; i++) {
+                    if (value && value[keys[i]]) {
+                        value = value[keys[i]];
+                    } else {
+                        return path; // Return path if not found
+                    }
+                }
+                // If value has language keys, return the one for current language
+                if (value && typeof value === 'object' && value[$scope.language]) {
+                    return value[$scope.language];
+                }
+                return value;
             };
 
             /**
@@ -388,16 +407,22 @@ angular.module('cdiWidget')
                 if (!$scope.buttons.acknowledge) return;
 
                 $scope.showLoader = true;
-                $scope.loaderText = 'Enviando ACK...';
+                $scope.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[$scope.language];
 
                 CdiWidgetService.sendAcknowledge($scope.apiDomain, $scope.userId)
                     .then(function (response) {
                         $scope.showLoader = false;
-                        showAlert('Éxito', 'Comando ACK enviado correctamente');
+                        showAlert(
+                            CDI_CONFIG.DICTIONARY.modals.alert.acknowledge.success.header[$scope.language],
+                            CDI_CONFIG.DICTIONARY.modals.alert.acknowledge.success.content[$scope.language]
+                        );
                     })
                     .catch(function (error) {
                         $scope.showLoader = false;
-                        showAlert('Error', 'Error al enviar ACK: ' + error.message);
+                        showAlert(
+                            CDI_CONFIG.DICTIONARY.modals.alert.acknowledge.error.header[$scope.language],
+                            CDI_CONFIG.DICTIONARY.modals.alert.acknowledge.error.content[$scope.language]
+                        );
                     });
             };
 
@@ -408,16 +433,22 @@ angular.module('cdiWidget')
                 if (!$scope.buttons.reset) return;
 
                 $scope.showLoader = true;
-                $scope.loaderText = 'Iniciando Reset...';
+                $scope.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[$scope.language];
 
                 CdiWidgetService.sendReset($scope.apiDomain, $scope.userId)
                     .then(function (response) {
                         $scope.showLoader = false;
-                        showAlert('Éxito', 'Reset iniciado');
+                        showAlert(
+                            CDI_CONFIG.DICTIONARY.modals.alert.reset.success.header[$scope.language],
+                            CDI_CONFIG.DICTIONARY.modals.alert.reset.success.content[$scope.language]
+                        );
                     })
                     .catch(function (error) {
                         $scope.showLoader = false;
-                        showAlert('Error', 'Error al resetear: ' + error.message);
+                        showAlert(
+                            CDI_CONFIG.DICTIONARY.modals.alert.reset.error.header[$scope.language],
+                            CDI_CONFIG.DICTIONARY.modals.alert.reset.error.content[$scope.language]
+                        );
                     });
             };
 
@@ -428,16 +459,22 @@ angular.module('cdiWidget')
                 if (!$scope.buttons.test) return;
 
                 $scope.showLoader = true;
-                $scope.loaderText = 'Ejecutando Test...';
+                $scope.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[$scope.language];
 
                 CdiWidgetService.sendTest($scope.apiDomain, $scope.userId)
                     .then(function (response) {
                         $scope.showLoader = false;
-                        showAlert('Éxito', 'Test ejecutado correctamente');
+                        showAlert(
+                            CDI_CONFIG.DICTIONARY.modals.alert.test.success.header[$scope.language],
+                            CDI_CONFIG.DICTIONARY.modals.alert.test.success.content[$scope.language]
+                        );
                     })
                     .catch(function (error) {
                         $scope.showLoader = false;
-                        showAlert('Error', 'Error al ejecutar test: ' + error.message);
+                        showAlert(
+                            CDI_CONFIG.DICTIONARY.modals.alert.test.error.header[$scope.language],
+                            CDI_CONFIG.DICTIONARY.modals.alert.test.error.content[$scope.language]
+                        );
                     });
             };
 
