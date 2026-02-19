@@ -45,6 +45,10 @@ angular.module('cdiWidget')
             // Previous barStatus to detect changes
             var previousBarStatus = null;
 
+            // Previous lines and inputs to detect changes
+            var previousLinesData = null;
+            var previousInputsData = null;
+
             // Buttons state
             $scope.buttons = {
                 acknowledge: true,
@@ -126,12 +130,23 @@ angular.module('cdiWidget')
 
                 CdiWidgetService.getLinesStatus($scope.apiDomain)
                     .then(function (data) {
-                        const lines = data['LINEAS']
+                        const lines = data['LINEAS'] || []
                             .filter((line) => line.status !== 0); // Filter out normal status lines to reduce API noise
-                        const inputs = data['ENTRADAS']
+                        const inputs = data['ENTRADAS'] || []
                             .filter((input) => input.status !== 0); // Filter out normal status inputs to reduce API noise
-                        $scope.lines = orderLines(lines || []);
-                        $scope.inputs = orderInputs(inputs || []);
+
+                        // Check if data actually changed
+                        if (!hasArrayChanged(previousLinesData, lines) && !hasArrayChanged(previousInputsData, inputs)) {
+                            return; // Skip update if nothing changed
+                        }
+
+                        // Update arrays only when data changed
+                        $scope.lines = orderLines(lines);
+                        $scope.inputs = orderInputs(inputs);
+
+                        // Save current state for next comparison
+                        previousLinesData = angular.copy(lines);
+                        previousInputsData = angular.copy(inputs);
                     })
                     .catch(function (error) {
                         console.error('Error loading lines data:', error);
@@ -164,6 +179,34 @@ angular.module('cdiWidget')
             $scope.isConfigured = function () {
                 return $scope.apiDomain && $scope.userId && $scope.userCode;
             };
+
+            /**
+             * Helper function to check if arrays have changed
+             */
+            function hasArrayChanged(previousArray, currentArray) {
+                // If no previous data, consider it changed
+                if (!previousArray) return true;
+
+                // Check length first (quick check)
+                if (previousArray.length !== currentArray.length) return true;
+
+                // Compare each item's relevant properties
+                for (var i = 0; i < currentArray.length; i++) {
+                    var prev = previousArray[i];
+                    var curr = currentArray[i];
+
+                    // Check if any relevant property changed
+                    if (prev.number !== curr.number ||
+                        prev.status !== curr.status ||
+                        prev.enable !== curr.enable ||
+                        prev.alias !== curr.alias) {
+                        return true;
+                    }
+                }
+
+                return false; // No changes detected
+            }
+
             // ==================== RENDERING LOGIC ====================
 
             /**
@@ -195,7 +238,7 @@ angular.module('cdiWidget')
              */
             function updateStatusBarIcons() {
                 // Check if barStatus actually changed
-                if (previousBarStatus && 
+                if (previousBarStatus &&
                     previousBarStatus.alarm === $scope.barStatus.alarm &&
                     previousBarStatus.fault === $scope.barStatus.fault &&
                     previousBarStatus.disconnect === $scope.barStatus.disconnect &&
