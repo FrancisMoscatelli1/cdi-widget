@@ -77,8 +77,6 @@ angular.module('cdiWidget')
             function authenticate() {
                 CdiWidgetService.authenticateUser($scope.apiDomain, $scope.userId, $scope.userCode)
                     .then(function (result) {
-                        console.log(result);
-
                         if (result.success) {
                             $scope.isAuthenticated = true;
                             $scope.buttons.reset = true; // Enable reset button after successful authentication
