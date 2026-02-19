@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDI Widget - Ejemplo de Directiva</title>
+    
+    <!-- AngularJS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    
+    <!-- CDI Widget Module y Archivos -->
+    <script src="js/cdi-widget.module.js"></script>
+    <script src="js/cdi-widget.service.js"></script>
+    <script src="js/cdi-widget.controller.js"></script>
+    <script src="js/cdi-widget.directive.js"></script>
+    
+    <!-- CDI Widget Styles -->
+    <link rel="stylesheet" href="css/cdi-widget.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: flex;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin: 20px 0 15px;
+            text-transform: uppercase;
+        }
+
+        .sidebar h3:first-child {
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border: 1px solid #b3d9e6;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 11px;
+            color: #2c5aa0;
+        }
+
+        .info-box code {
+            display: block;
+            background: white;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 8px 0;
+            overflow-x: auto;
+            border: 1px solid #b3d9e6;
+            font-family: 'Courier New', monospace;
+        }
+
+        .widget-container {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .code-example {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 11px;
+            font-family: 'Courier New', monospace;
+            color: #333;
+            overflow-x: auto;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .widget-container {
+                min-height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div ng-controller="AppController" class="container">
+        
+        <!-- Header -->
+        <div class="header">
+            <h1>🧩 CDI Widget - Directiva AngularJS</h1>
+            <p>Usando &lt;cdi-widget&gt; como elemento HTML personalizado</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h3>⚙️ Configuración</h3>
+                
+                <div class="form-group">
+                    <label>API Domain</label>
+                    <input type="text" 
+                           ng-model="widgetConfig.apiDomain" 
+                           placeholder="http://api.ejemplo.com">
+                </div>
+
+                <div class="form-group">
+                    <label>User ID</label>
+                    <input type="number" 
+                           ng-model="widgetConfig.userId" 
+                           placeholder="123">
+                </div>
+
+                <div class="form-group">
+                    <label>Code</label>
+                    <input type="text" 
+                           ng-model="widgetConfig.userCode" 
+                           placeholder="abc123">
+                </div>
+
+                <div class="form-group">
+                    <label>Language</label>
+                    <select ng-model="widgetConfig.language">
+                        <option value="es">Español</option>
+                        <option value="en">English</option>
+                        <option value="pt">Português</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" ng-click="applyConfig()">
+                    ✓ Aplicar configuración
+                </button>
+
+                <h3>📋 Ejemplos URL</h3>
+                <div class="code-example">
+http://localhost:8000?
+apiDomain=http://api.com
+&userId=123
+&code=abc123
+&language=es
+                </div>
+
+                <div class="info-box">
+                    <strong>✓ Estado:</strong> {{configStatus}}
+                </div>
+
+                <div class="info-box">
+                    <strong>📌 Nota:</strong> Los cambios en la configuración se reflejarán en el widget automáticamente
+                </div>
+            </div>
+
+            <!-- Widget Container -->
+            <div class="widget-container">
+                <!-- El widget usando la directiva -->
+                <cdi-widget 
+                    api-domain="{{widgetConfig.apiDomain}}"
+                    user-id="{{widgetConfig.userId}}"
+                    user-code="{{widgetConfig.userCode}}"
+                    language="{{widgetConfig.language}}">
+                </cdi-widget>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Aplicación principal que usa la directiva CDI Widget
+         */
+        angular.module('myApp', ['cdiWidget'])
+            .controller('AppController', ['$scope', '$timeout', function($scope, $timeout) {
+                
+                // Configuración del widget
+                $scope.widgetConfig = {
+                    apiDomain: 'http://localhost:3001',
+                    userId: 2,
+                    userCode: '2222',
+                    language: 'es'
+                };
+
+                $scope.configStatus = '⏳ Esperando...';
+
+                // Aplicar configuración
+                $scope.applyConfig = function() {
+                    $scope.configStatus = '✓ Configuración aplicada';
+                    console.log('Widget configurado con:', $scope.widgetConfig);
+                };
+
+       
+                // Auto-cargar en inicio
+                $timeout(function() {
+                    $scope.applyConfig();
+                }, 500);
+            }]);
+
+        console.log('✓ Aplicación iniciada');
+        console.log('Usando <cdi-widget> como directiva');
+    </script>
+</body>
+</html>
