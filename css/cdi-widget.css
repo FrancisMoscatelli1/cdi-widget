@@ -1,13 +1,13 @@
-html,
+/* html,
 body,
 div {
     margin: 0;
     padding: 0;
     border: 0;
-    font-family: Arial;
-}
+    font-family: Arial; 
+} */
 
-main {
+.cdi-main {
     height: calc(100vh - 36px);
     overflow: auto;
     overflow-y: scroll;
