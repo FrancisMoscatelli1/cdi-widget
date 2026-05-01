@@ -108,7 +108,7 @@
         /**
          * Aplicación principal que usa la directiva CDI Widget
          */
-        angular.module('myApp', ['cdiWidget'])
+        angular.module('myApp', ['cdiService'])
             .controller('AppController', ['$scope', '$timeout', function ($scope, $timeout) {
                 // Configuración del widget
                 $scope.widgetConfig = {

@@ -10,7 +10,7 @@
  *     language="es">
  * </cdi-widget>
  */
-angular.module('cdiWidget')
+angular.module('cdiService')
     .directive('cdiWidget', ['$timeout', function ($timeout) {
         return {
             restrict: 'E',
@@ -27,7 +27,7 @@ angular.module('cdiWidget')
             link: function (scope, element, attrs, vm) {
                 // The properties are already bound to the controller (vm) 
                 // due to bindToController: true
-                
+
                 console.log('CDI Widget initialized with:', {
                     apiDomain: vm.apiDomain,
                     userId: vm.userId,

@@ -2,7 +2,7 @@
  * CDI Widget Controller
  * Main controller for the CDI Widget
  */
-angular.module('cdiWidget')
+angular.module('cdiService')
     .controller('CdiWidgetController', [
         '$scope', '$interval', '$timeout', 'CdiWidgetService', 'CDI_CONFIG',
         function ($scope, $interval, $timeout, CdiWidgetService, CDI_CONFIG) {

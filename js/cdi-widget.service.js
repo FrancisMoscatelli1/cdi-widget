@@ -3,7 +3,7 @@
  * Handles all API calls to the backend
  * Falls back to mock data if available (for testing)
  */
-angular.module('cdiWidget')
+angular.module('cdiService')
     .constant('CDI_CONFIG', {
         DEFAULT_LANGUAGE: 'es',
         POLLING_INTERVAL: 2500,
