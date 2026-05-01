@@ -11,7 +11,7 @@
  * </cdi-widget>
  */
 angular.module('cdiWidget')
-    .directive('cdiWidget', ['$timeout', function($timeout) {
+    .directive('cdiWidget', ['$timeout', function ($timeout) {
         return {
             restrict: 'E',
             templateUrl: 'templates/cdi-widget.html',
@@ -22,20 +22,17 @@ angular.module('cdiWidget')
                 language: '@'
             },
             controller: 'CdiWidgetController',
-            link: function(scope, element, attrs) {
-                // Convert userId to integer if provided
-                if (attrs.userId) {
-                    scope.userId = parseInt(attrs.userId);
-                }
-                
-                // Set default values from attributes
-                scope.language = scope.language || 'es';
+            controllerAs: 'vm',
+            bindToController: true,
+            link: function (scope, element, attrs, vm) {
+                // The properties are already bound to the controller (vm) 
+                // due to bindToController: true
                 
                 console.log('CDI Widget initialized with:', {
-                    apiDomain: scope.apiDomain,
-                    userId: scope.userId,
-                    userCode: scope.userCode,
-                    language: scope.language
+                    apiDomain: vm.apiDomain,
+                    userId: vm.userId,
+                    userCode: vm.userCode,
+                    language: vm.language
                 });
             }
         };

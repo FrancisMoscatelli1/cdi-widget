@@ -7,7 +7,7 @@
     <title>CDI2 WIDGET</title>
     <script>
         let isAuthenticated = false;
-        
+
         // Configuration variables
         let language = 'es';
         let apiDomain = '';
@@ -322,7 +322,7 @@
             // Check if bars have changed
             const linesString = JSON.stringify(lines);
             const inputsString = JSON.stringify(inputs);
-            
+
             if (previousLinesData === linesString && previousInputsData === inputsString) {
                 return; // No changes, skip update
             }

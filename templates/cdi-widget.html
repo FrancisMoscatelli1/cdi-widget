@@ -1,57 +1,57 @@
 <!-- Configuration Error Message -->
-<div ng-if="!isConfigured()"
+<div ng-if="!vm.isConfigured()"
     style="padding: 30px; text-align: center; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; margin: 20px;">
     <h3 style="color: #856404;">⚠️ Widget CDI no configurado</h3>
 </div>
 
 <!-- Status Bar Header -->
-<header ng-if="isConfigured()">
+<header ng-if="vm.isConfigured()">
     <nav class="status-bar">
         <div class="icon-container left">
-            <img ng-repeat="icon in statusBarIconsLeft" ng-src="{{icon.src}}" class="icon" alt="{{icon.alt}}"
+            <img ng-repeat="icon in vm.statusBarIconsLeft" ng-src="{{icon.src}}" class="icon" alt="{{icon.alt}}"
                 title="{{icon.alt}}">
         </div>
 
-        <h1 class="nombre">{{installationName}}</h1>
+        <h1 class="nombre">{{vm.installationName}}</h1>
 
         <div class="icon-container right">
-            <img ng-repeat="icon in statusBarIconsRight" ng-src="{{icon.src}}" class="icon" alt="{{icon.alt}}"
+            <img ng-repeat="icon in vm.statusBarIconsRight" ng-src="{{icon.src}}" class="icon" alt="{{icon.alt}}"
                 title="{{icon.alt}}">
         </div>
     </nav>
 </header>
 
 <!-- Main content -->
-<main class="row" ng-if="isConfigured()">
+<main class="row" ng-if="vm.isConfigured()">
 
     <!-- Bars container (Lines and Inputs) -->
-    <div class="bar-container" ng-class="{message: lines.length === 0 && inputs.length === 0}">
+    <div class="bar-container" ng-class="{message: vm.lines.length === 0 && vm.inputs.length === 0}">
         <!-- Display bars only when not loading -->
-        <ng-show ng-if="lines.length === 0 && inputs.length === 0">
+        <ng-show ng-if="vm.lines.length === 0 && vm.inputs.length === 0">
             <h3 class="main-header-title">
-                {{t('main.lineAndInputNormalization')}}
+                {{vm.t('main.lineAndInputNormalization')}}
             </h3>
         </ng-show>
 
         <!-- Lines -->
-        <div ng-repeat="line in lines" ng-if="shouldShowBar(line)"
-            class="bar show {{getBarColor('line', line.status)}}">
+        <div ng-repeat="line in vm.lines" ng-if="vm.shouldShowBar(line)"
+            class="bar show {{vm.getBarColor('line', line.status)}}">
             <div class="bar-content-container">
-                <img ng-src="{{getBarIcon('line', line.status)}}" class="icon" alt="Line">
+                <img ng-src="{{vm.getBarIcon('line', line.status)}}" class="icon" alt="Line">
                 <div class="bar-text">
-                    <strong>{{getBarName('line')}} {{line.number}} {{getStatusText(line.status)}}</strong>
+                    <strong>{{vm.getBarName('line')}} {{line.number}} {{vm.getStatusText(line.status)}}</strong>
                     <div><span>{{line.alias}}</span></div>
                 </div>
             </div>
         </div>
 
         <!-- Inputs -->
-        <div ng-repeat="input in inputs" ng-if="shouldShowBar(input)"
-            class="bar show {{getBarColor('input', input.status)}}">
+        <div ng-repeat="input in vm.inputs" ng-if="vm.shouldShowBar(input)"
+            class="bar show {{vm.getBarColor('input', input.status)}}">
             <div class="bar-content-container">
-                <img ng-src="{{getBarIcon('input', input.status)}}" class="icon" alt="Input">
+                <img ng-src="{{vm.getBarIcon('input', input.status)}}" class="icon" alt="Input">
                 <div class="bar-text">
-                    <strong>{{getBarName('input')}} {{input.number}} {{getStatusText(input.status)}}</strong>
+                    <strong>{{vm.getBarName('input')}} {{input.number}} {{vm.getStatusText(input.status)}}</strong>
                     <div><span>{{input.alias}}</span></div>
                 </div>
             </div>
@@ -61,42 +61,42 @@
     <!-- Buttons container -->
     <div class="column button-container">
         <!-- Acknowledge Button -->
-        <button class="barbutton" ng-click="acknowledge()" ng-disabled="!buttons.acknowledge" type="button">
+        <button class="barbutton" ng-click="vm.acknowledge()" ng-disabled="!vm.buttons.acknowledge" type="button">
             <img src="assets/icons/check.svg" alt="Acknowledge">
-            <span>{{t('main.buttons.acknowledge')}}</span>
+            <span>{{vm.t('main.buttons.acknowledge')}}</span>
         </button>
 
         <div class="buttons-separator"></div>
 
         <!-- Reset Button -->
-        <button class="barbutton" ng-click="reset()" ng-disabled="!buttons.reset" type="button">
+        <button class="barbutton" ng-click="vm.reset()" ng-disabled="!vm.buttons.reset" type="button">
             <img src="assets/icons/reset.svg" alt="Reset">
-            <span>{{t('main.buttons.reset')}}</span>
+            <span>{{vm.t('main.buttons.reset')}}</span>
         </button>
 
         <div class="buttons-separator"></div>
 
         <!-- Test Button -->
-        <button class="barbutton" ng-click="test()" ng-disabled="!buttons.test" type="button">
+        <button class="barbutton" ng-click="vm.test()" ng-disabled="!vm.buttons.test" type="button">
             <img src="assets/icons/test.svg" alt="Test">
-            <span>{{t('main.buttons.test')}}</span>
+            <span>{{vm.t('main.buttons.test')}}</span>
         </button>
     </div>
 </main>
 
 <!-- Alert Modal -->
-<div class="modal" ng-class="{show: alert.show}">
+<div class="modal" ng-class="{show: vm.alert.show}">
     <div class="modal-content alert">
         <div>
             <div>
-                <h3 class="modal-header">{{alert.title}}</h3>
+                <h3 class="modal-header">{{vm.alert.title}}</h3>
             </div>
             <div>
-                <p>{{alert.content}}</p>
+                <p>{{vm.alert.content}}</p>
             </div>
         </div>
         <div class="modal-row">
-            <button class="modal-button" ng-click="closeAlert()" type="button">
+            <button class="modal-button" ng-click="vm.closeAlert()" type="button">
                 OK
             </button>
         </div>
@@ -104,10 +104,10 @@
 </div>
 
 <!-- Loader Modal -->
-<div class="modal" ng-class="{show: showLoader}">
+<div class="modal" ng-class="{show: vm.showLoader}">
     <div class="modal-content loader-modal">
         <div>
-            <h3 class="modal-header">{{loaderText}}</h3>
+            <h3 class="modal-header">{{vm.loaderText}}</h3>
         </div>
         <div style="display: flex; justify-content: center;">
             <div style="width: 48px;">

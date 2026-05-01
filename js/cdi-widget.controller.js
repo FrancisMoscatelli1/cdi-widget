@@ -9,22 +9,24 @@ angular.module('cdiWidget')
 
             // ==================== INITIALIZATION ====================
 
-            $scope.isAuthenticated = false;
-            $scope.showLoader = false;
-            $scope.loaderText = '';
+            const vm = this;
+
+            vm.isAuthenticated = false;
+            vm.showLoader = false;
+            vm.loaderText = '';
 
             // Alert modal state
-            $scope.alert = {
+            vm.alert = {
                 show: false,
                 title: '',
                 content: ''
             };
 
             // Widget state
-            $scope.installationName = '';
-            $scope.lines = [];
-            $scope.inputs = [];
-            $scope.barStatus = {
+            vm.installationName = '';
+            vm.lines = [];
+            vm.inputs = [];
+            vm.barStatus = {
                 // (left container)
                 alarm: false,
                 fault: false,
@@ -39,8 +41,8 @@ angular.module('cdiWidget')
             };
 
             // Cached icon arrays (to prevent infinite digest)
-            $scope.statusBarIconsLeft = [];
-            $scope.statusBarIconsRight = [];
+            vm.statusBarIconsLeft = [];
+            vm.statusBarIconsRight = [];
 
             // Previous barStatus to detect changes
             var previousBarStatus = null;
@@ -50,14 +52,14 @@ angular.module('cdiWidget')
             var previousInputsData = null;
 
             // Buttons state
-            $scope.buttons = {
+            vm.buttons = {
                 acknowledge: true,
                 reset: false,
                 test: false
             };
 
             // Language
-            $scope.language = $scope.language || CDI_CONFIG.DEFAULT_LANGUAGE;
+            vm.language = vm.language || CDI_CONFIG.DEFAULT_LANGUAGE;
 
             // ==================== CONFIGURATION ====================
 
@@ -65,12 +67,12 @@ angular.module('cdiWidget')
              * Initialize configuration from attributes
              */
             function initializeConfig() {
-                $scope.apiDomain = $scope.apiDomain || '';
-                $scope.userId = parseInt($scope.userId || 0);
-                $scope.userCode = $scope.userCode || '';
-                $scope.language = $scope.language || CDI_CONFIG.DEFAULT_LANGUAGE;
+                vm.apiDomain = vm.apiDomain || '';
+                vm.userId = parseInt(vm.userId || 0);
+                vm.userCode = vm.userCode || '';
+                vm.language = vm.language || CDI_CONFIG.DEFAULT_LANGUAGE;
 
-                if ($scope.apiDomain && $scope.userId && $scope.userCode) {
+                if (vm.apiDomain && vm.userId && vm.userCode) {
                     authenticate();
                 }
             }
@@ -79,12 +81,12 @@ angular.module('cdiWidget')
              * Authenticate user with the API
              */
             function authenticate() {
-                CdiWidgetService.authenticateUser($scope.apiDomain, $scope.userId, $scope.userCode)
+                CdiWidgetService.authenticateUser(vm.apiDomain, vm.userId, vm.userCode)
                     .then(function (result) {
                         if (result.success) {
-                            $scope.isAuthenticated = true;
-                            $scope.buttons.reset = true; // Enable reset button after successful authentication
-                            $scope.buttons.test = true; // Enable test button after successful authentication
+                            vm.isAuthenticated = true;
+                            vm.buttons.reset = true; // Enable reset button after successful authentication
+                            vm.buttons.test = true; // Enable test button after successful authentication
                             console.log('User authenticated successfully');
                             loadInitialData();
                             startAutoRefresh();
@@ -103,10 +105,10 @@ angular.module('cdiWidget')
              * Load initial data from API
              */
             function loadInitialData() {
-                CdiWidgetService.getGeneralConfig($scope.apiDomain)
+                CdiWidgetService.getGeneralConfig(vm.apiDomain)
                     .then(function (config) {
                         if (config && config.cfgGeneral && config.cfgGeneral['NAME']) {
-                            $scope.installationName = config.cfgGeneral['NAME'];
+                            vm.installationName = config.cfgGeneral['NAME'];
                         }
                     })
                     .catch(function (error) {
@@ -120,7 +122,7 @@ angular.module('cdiWidget')
              * Load bar status data
              */
             function loadStatusData() {
-                CdiWidgetService.getBarStatus($scope.apiDomain)
+                CdiWidgetService.getBarStatus(vm.apiDomain)
                     .then(function (data) {
                         updateBarStatus(data.barstatus);
                     })
@@ -128,7 +130,7 @@ angular.module('cdiWidget')
                         console.error('Error loading bar data:', error);
                     });
 
-                CdiWidgetService.getLinesStatus($scope.apiDomain)
+                CdiWidgetService.getLinesStatus(vm.apiDomain)
                     .then(function (data) {
                         const lines = data['LINEAS'] || []
                             .filter((line) => line.status !== 0); // Filter out normal status lines to reduce API noise
@@ -141,8 +143,8 @@ angular.module('cdiWidget')
                         }
 
                         // Update arrays only when data changed
-                        $scope.lines = orderLines(lines);
-                        $scope.inputs = orderInputs(inputs);
+                        vm.lines = orderLines(lines);
+                        vm.inputs = orderInputs(inputs);
 
                         // Save current state for next comparison
                         previousLinesData = angular.copy(lines);
@@ -157,27 +159,27 @@ angular.module('cdiWidget')
              * Start auto-refresh interval
              */
             function startAutoRefresh() {
-                if ($scope.refreshInterval) {
-                    $interval.cancel($scope.refreshInterval);
+                if (vm.refreshInterval) {
+                    $interval.cancel(vm.refreshInterval);
                 }
 
-                $scope.refreshInterval = $interval(function () {
-                    // if ($scope.isAuthenticated && !$scope.showLoader) {
+                vm.refreshInterval = $interval(function () {
+                    // if (vm.isAuthenticated && !vm.showLoader) {
                     loadStatusData();
                     // }
                 }, CDI_CONFIG.POLLING_INTERVAL || 2500);
 
                 $scope.$on('$destroy', function () {
-                    if ($scope.refreshInterval) {
-                        $interval.cancel($scope.refreshInterval);
+                    if (vm.refreshInterval) {
+                        $interval.cancel(vm.refreshInterval);
                     }
                 });
             }
             /**
              * Check if widget is properly configured
              */
-            $scope.isConfigured = function () {
-                return $scope.apiDomain && $scope.userId && $scope.userCode;
+            vm.isConfigured = function () {
+                return vm.apiDomain && vm.userId && vm.userCode;
             };
 
             /**
@@ -213,7 +215,7 @@ angular.module('cdiWidget')
              * Update bar status icons
              */
             function updateBarStatus(barStatus) {
-                $scope.barStatus = {
+                vm.barStatus = {
                     // Status indicators (left container)
                     alarm: barStatus['ALARMA'] || false,
                     fault: barStatus['FALLA'] || false,
@@ -239,43 +241,43 @@ angular.module('cdiWidget')
             function updateStatusBarIcons() {
                 // Check if barStatus actually changed
                 if (previousBarStatus &&
-                    previousBarStatus.alarm === $scope.barStatus.alarm &&
-                    previousBarStatus.fault === $scope.barStatus.fault &&
-                    previousBarStatus.disconnect === $scope.barStatus.disconnect &&
-                    previousBarStatus.ground === $scope.barStatus.ground &&
-                    previousBarStatus.test === $scope.barStatus.test &&
-                    previousBarStatus.extinction === $scope.barStatus.extinction &&
-                    previousBarStatus.battery === $scope.barStatus.battery &&
-                    previousBarStatus.powerSupply === $scope.barStatus.powerSupply &&
-                    previousBarStatus.network === $scope.barStatus.network) {
+                    previousBarStatus.alarm === vm.barStatus.alarm &&
+                    previousBarStatus.fault === vm.barStatus.fault &&
+                    previousBarStatus.disconnect === vm.barStatus.disconnect &&
+                    previousBarStatus.ground === vm.barStatus.ground &&
+                    previousBarStatus.test === vm.barStatus.test &&
+                    previousBarStatus.extinction === vm.barStatus.extinction &&
+                    previousBarStatus.battery === vm.barStatus.battery &&
+                    previousBarStatus.powerSupply === vm.barStatus.powerSupply &&
+                    previousBarStatus.network === vm.barStatus.network) {
                     // No changes, skip update
                     return;
                 }
 
                 // Update left container icons
-                $scope.statusBarIconsLeft = [];
+                vm.statusBarIconsLeft = [];
 
-                if ($scope.barStatus.alarm) {
-                    $scope.statusBarIconsLeft.push({ src: 'assets/icons/bell.svg', alt: 'Alarma' });
+                if (vm.barStatus.alarm) {
+                    vm.statusBarIconsLeft.push({ src: 'assets/icons/bell.svg', alt: 'Alarma' });
                 }
-                if ($scope.barStatus.fault) {
-                    $scope.statusBarIconsLeft.push({ src: 'assets/icons/fault.svg', alt: 'Falla' });
+                if (vm.barStatus.fault) {
+                    vm.statusBarIconsLeft.push({ src: 'assets/icons/fault.svg', alt: 'Falla' });
                 }
-                if ($scope.barStatus.disconnect) {
-                    $scope.statusBarIconsLeft.push({ src: 'assets/icons/disconnect.svg', alt: 'Desconexión' });
+                if (vm.barStatus.disconnect) {
+                    vm.statusBarIconsLeft.push({ src: 'assets/icons/disconnect.svg', alt: 'Desconexión' });
                 }
-                if ($scope.barStatus.ground) {
-                    $scope.statusBarIconsLeft.push({ src: 'assets/icons/groundconnection.svg', alt: 'Tierra' });
+                if (vm.barStatus.ground) {
+                    vm.statusBarIconsLeft.push({ src: 'assets/icons/groundconnection.svg', alt: 'Tierra' });
                 }
-                if ($scope.barStatus.test) {
-                    $scope.statusBarIconsLeft.push({ src: 'assets/icons/test.svg', alt: 'Test' });
+                if (vm.barStatus.test) {
+                    vm.statusBarIconsLeft.push({ src: 'assets/icons/test.svg', alt: 'Test' });
                 }
-                if ($scope.barStatus.extinction) {
-                    $scope.statusBarIconsLeft.push({ src: 'assets/icons/extinction.png', alt: 'Extinción' });
+                if (vm.barStatus.extinction) {
+                    vm.statusBarIconsLeft.push({ src: 'assets/icons/extinction.png', alt: 'Extinción' });
                 }
 
                 // Update right container icons
-                const battery = $scope.barStatus.battery;
+                const battery = vm.barStatus.battery;
                 let batteryIcon = 'assets/icons/batteryfault.svg';
                 let batteryAlt = 'Batería: Falla';
 
@@ -293,34 +295,34 @@ angular.module('cdiWidget')
                     batteryAlt = 'Batería: 25%';
                 }
 
-                const powerIcon = $scope.barStatus.powerSupply
+                const powerIcon = vm.barStatus.powerSupply
                     ? 'assets/icons/powersupplynormal.svg'
                     : 'assets/icons/powersupplyfault.svg';
-                const powerAlt = $scope.barStatus.powerSupply
+                const powerAlt = vm.barStatus.powerSupply
                     ? 'Alimentación OK'
                     : 'Falla de alimentación';
 
-                const networkIcon = $scope.barStatus.network
+                const networkIcon = vm.barStatus.network
                     ? 'assets/icons/networknormal.svg'
                     : 'assets/icons/networkfault.svg';
-                const networkAlt = $scope.barStatus.network
+                const networkAlt = vm.barStatus.network
                     ? 'Red conectada'
                     : 'Red desconectada';
 
-                $scope.statusBarIconsRight = [
+                vm.statusBarIconsRight = [
                     { src: batteryIcon, alt: batteryAlt },
                     { src: powerIcon, alt: powerAlt },
                     { src: networkIcon, alt: networkAlt }
                 ];
 
                 // Save current state for next comparison
-                previousBarStatus = angular.copy($scope.barStatus);
+                previousBarStatus = angular.copy(vm.barStatus);
             }
 
             /**
              * Get bar color based on status
              */
-            $scope.getBarColor = function (type, status) {
+            vm.getBarColor = function (type, status) {
                 if (type === 'line') {
                     switch (status) {
                         case 0: return 'green';
@@ -349,7 +351,7 @@ angular.module('cdiWidget')
             /**
              * Get bar icon path
              */
-            $scope.getBarIcon = function (type, status) {
+            vm.getBarIcon = function (type, status) {
                 if (type === 'line') {
                     switch (status) {
                         case 0: return 'assets/icons/check.svg';
@@ -378,24 +380,24 @@ angular.module('cdiWidget')
             /**
              * Get bar name (Línea or Entrada)
              */
-            $scope.getBarName = function (type) {
+            vm.getBarName = function (type) {
                 if (type === 'input') {
-                    return CDI_CONFIG.DICTIONARY.main.bar.input.name[$scope.language] || 'Input';
+                    return CDI_CONFIG.DICTIONARY.main.bar.input.name[vm.language] || 'Input';
                 }
-                return CDI_CONFIG.DICTIONARY.main.bar.line.name[$scope.language] || 'Line';
+                return CDI_CONFIG.DICTIONARY.main.bar.line.name[vm.language] || 'Line';
             };
 
             /**
              * Get localized status text
              */
-            $scope.getStatusText = function (status) {
-                return CDI_CONFIG.STATUS_LYE[$scope.language][status] || 'Unknown';
+            vm.getStatusText = function (status) {
+                return CDI_CONFIG.STATUS_LYE[vm.language][status] || 'Unknown';
             };
 
             /**
              * Get translation from dictionary
              */
-            $scope.t = function (path) {
+            vm.t = function (path) {
                 const keys = path.split('.');
                 let value = CDI_CONFIG.DICTIONARY;
                 for (let i = 0; i < keys.length; i++) {
@@ -406,8 +408,8 @@ angular.module('cdiWidget')
                     }
                 }
                 // If value has language keys, return the one for current language
-                if (value && typeof value === 'object' && value[$scope.language]) {
-                    return value[$scope.language];
+                if (value && typeof value === 'object' && value[vm.language]) {
+                    return value[vm.language];
                 }
                 return value;
             };
@@ -435,7 +437,7 @@ angular.module('cdiWidget')
             /**
              * Check if bar should be displayed
              */
-            $scope.shouldShowBar = function (bar) {
+            vm.shouldShowBar = function (bar) {
                 return bar.enable === 1;
             };
 
@@ -444,25 +446,25 @@ angular.module('cdiWidget')
             /**
              * Send acknowledge command
              */
-            $scope.acknowledge = function () {
-                if (!$scope.buttons.acknowledge) return;
+            vm.acknowledge = function () {
+                if (!vm.buttons.acknowledge) return;
 
-                $scope.showLoader = true;
-                $scope.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[$scope.language];
+                vm.showLoader = true;
+                vm.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[vm.language];
 
-                CdiWidgetService.sendAcknowledge($scope.apiDomain, $scope.userId)
+                CdiWidgetService.sendAcknowledge(vm.apiDomain, vm.userId)
                     .then(function (response) {
-                        $scope.showLoader = false;
+                        vm.showLoader = false;
                         showAlert(
-                            CDI_CONFIG.DICTIONARY.modals.alert.acknowledge.success.header[$scope.language],
-                            CDI_CONFIG.DICTIONARY.modals.alert.acknowledge.success.content[$scope.language]
+                            CDI_CONFIG.DICTIONARY.modals.alert.acknowledge.success.header[vm.language],
+                            CDI_CONFIG.DICTIONARY.modals.alert.acknowledge.success.content[vm.language]
                         );
                     })
                     .catch(function (error) {
-                        $scope.showLoader = false;
+                        vm.showLoader = false;
                         showAlert(
-                            CDI_CONFIG.DICTIONARY.modals.alert.acknowledge.error.header[$scope.language],
-                            CDI_CONFIG.DICTIONARY.modals.alert.acknowledge.error.content[$scope.language]
+                            CDI_CONFIG.DICTIONARY.modals.alert.acknowledge.error.header[vm.language],
+                            CDI_CONFIG.DICTIONARY.modals.alert.acknowledge.error.content[vm.language]
                         );
                     });
             };
@@ -470,25 +472,25 @@ angular.module('cdiWidget')
             /**
              * Send reset command
              */
-            $scope.reset = function () {
-                if (!$scope.buttons.reset) return;
+            vm.reset = function () {
+                if (!vm.buttons.reset) return;
 
-                $scope.showLoader = true;
-                $scope.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[$scope.language];
+                vm.showLoader = true;
+                vm.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[vm.language];
 
-                CdiWidgetService.sendReset($scope.apiDomain, $scope.userId)
+                CdiWidgetService.sendReset(vm.apiDomain, vm.userId)
                     .then(function (response) {
-                        $scope.showLoader = false;
+                        vm.showLoader = false;
                         showAlert(
-                            CDI_CONFIG.DICTIONARY.modals.alert.reset.success.header[$scope.language],
-                            CDI_CONFIG.DICTIONARY.modals.alert.reset.success.content[$scope.language]
+                            CDI_CONFIG.DICTIONARY.modals.alert.reset.success.header[vm.language],
+                            CDI_CONFIG.DICTIONARY.modals.alert.reset.success.content[vm.language]
                         );
                     })
                     .catch(function (error) {
-                        $scope.showLoader = false;
+                        vm.showLoader = false;
                         showAlert(
-                            CDI_CONFIG.DICTIONARY.modals.alert.reset.error.header[$scope.language],
-                            CDI_CONFIG.DICTIONARY.modals.alert.reset.error.content[$scope.language]
+                            CDI_CONFIG.DICTIONARY.modals.alert.reset.error.header[vm.language],
+                            CDI_CONFIG.DICTIONARY.modals.alert.reset.error.content[vm.language]
                         );
                     });
             };
@@ -496,25 +498,25 @@ angular.module('cdiWidget')
             /**
              * Send test command
              */
-            $scope.test = function () {
-                if (!$scope.buttons.test) return;
+            vm.test = function () {
+                if (!vm.buttons.test) return;
 
-                $scope.showLoader = true;
-                $scope.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[$scope.language];
+                vm.showLoader = true;
+                vm.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[vm.language];
 
-                CdiWidgetService.sendTest($scope.apiDomain, $scope.userId)
+                CdiWidgetService.sendTest(vm.apiDomain, vm.userId)
                     .then(function (response) {
-                        $scope.showLoader = false;
+                        vm.showLoader = false;
                         showAlert(
-                            CDI_CONFIG.DICTIONARY.modals.alert.test.success.header[$scope.language],
-                            CDI_CONFIG.DICTIONARY.modals.alert.test.success.content[$scope.language]
+                            CDI_CONFIG.DICTIONARY.modals.alert.test.success.header[vm.language],
+                            CDI_CONFIG.DICTIONARY.modals.alert.test.success.content[vm.language]
                         );
                     })
                     .catch(function (error) {
-                        $scope.showLoader = false;
+                        vm.showLoader = false;
                         showAlert(
-                            CDI_CONFIG.DICTIONARY.modals.alert.test.error.header[$scope.language],
-                            CDI_CONFIG.DICTIONARY.modals.alert.test.error.content[$scope.language]
+                            CDI_CONFIG.DICTIONARY.modals.alert.test.error.header[vm.language],
+                            CDI_CONFIG.DICTIONARY.modals.alert.test.error.content[vm.language]
                         );
                     });
             };
@@ -525,43 +527,48 @@ angular.module('cdiWidget')
              * Show alert modal
              */
             function showAlert(title, content) {
-                $scope.alert.show = true;
-                $scope.alert.title = title;
-                $scope.alert.content = content;
+                vm.alert.show = true;
+                vm.alert.title = title;
+                vm.alert.content = content;
             }
 
             /**
              * Close alert modal
              */
-            $scope.closeAlert = function () {
-                $scope.alert.show = false;
+            vm.closeAlert = function () {
+                vm.alert.show = false;
             };
 
             // ==================== INITIALIZATION ====================
 
-            // Initialize icon arrays with default values
-            updateStatusBarIcons();
+            /**
+             * Lifecycle hook: Initialize controller
+             */
+            vm.$onInit = function () {
+                // Initialize icon arrays with default values
+                updateStatusBarIcons();
 
-            // Initialize when controller is ready
-            initializeConfig();
+                // Initialize when controller is ready
+                initializeConfig();
+            };
 
             // Watch for configuration changes from parent scope (test.html)
             if ($scope.$parent && $scope.$parent.config) {
                 $scope.$parent.$watch('config', function (newConfig) {
                     if (newConfig && newConfig.apiDomain) {
-                        $scope.apiDomain = newConfig.apiDomain;
-                        $scope.userId = newConfig.userId;
-                        $scope.userCode = newConfig.userCode;
-                        $scope.language = newConfig.language;
+                        vm.apiDomain = newConfig.apiDomain;
+                        vm.userId = newConfig.userId;
+                        vm.userCode = newConfig.userCode;
+                        vm.language = newConfig.language;
 
                         console.log('Configuration updated from parent:', {
-                            apiDomain: $scope.apiDomain,
-                            userId: $scope.userId,
-                            language: $scope.language
+                            apiDomain: vm.apiDomain,
+                            userId: vm.userId,
+                            language: vm.language
                         });
 
-                        if ($scope.apiDomain && $scope.userId && $scope.userCode) {
-                            if (!$scope.isAuthenticated) {
+                        if (vm.apiDomain && vm.userId && vm.userCode) {
+                            if (!vm.isAuthenticated) {
                                 authenticate();
                                 loadInitialData();
                             }
@@ -571,3 +578,4 @@ angular.module('cdiWidget')
             }
         }
     ]);
+
