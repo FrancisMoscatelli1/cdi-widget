@@ -51,6 +51,8 @@ angular.module('cdiService')
             var previousLinesData = null;
             var previousInputsData = null;
 
+            vm.isConfigured = false;
+
             // Buttons state
             vm.buttons = {
                 acknowledge: true,
@@ -73,6 +75,7 @@ angular.module('cdiService')
                 vm.language = vm.language || CDI_CONFIG.DEFAULT_LANGUAGE;
 
                 if (vm.apiDomain && vm.userId && vm.userCode) {
+                    vm.isConfigured = true
                     authenticate();
                 }
             }
@@ -175,12 +178,6 @@ angular.module('cdiService')
                     }
                 });
             }
-            /**
-             * Check if widget is properly configured
-             */
-            vm.isConfigured = function () {
-                return vm.apiDomain && vm.userId && vm.userCode;
-            };
 
             /**
              * Helper function to check if arrays have changed

@@ -1,11 +1,11 @@
 <!-- Configuration Error Message -->
-<div ng-if="!vm.isConfigured()"
+<div ng-if="!vm.isConfigured"
     style="padding: 30px; text-align: center; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; margin: 20px;">
     <h3 style="color: #856404;">⚠️ Widget CDI no configurado</h3>
 </div>
 
 <!-- Status Bar Header -->
-<header ng-if="vm.isConfigured()">
+<header ng-if="vm.isConfigured">
     <nav class="status-bar">
         <div class="icon-container left">
             <img ng-repeat="icon in vm.statusBarIconsLeft" ng-src="{{icon.src}}" class="icon" alt="{{icon.alt}}"
@@ -22,7 +22,7 @@
 </header>
 
 <!-- Main content -->
-<main class="cdi-main row" ng-if="vm.isConfigured()">
+<main class="cdi-main row" ng-if="vm.isConfigured">
 
     <!-- Bars container (Lines and Inputs) -->
     <div class="bar-container" ng-class="{message: vm.lines.length === 0 && vm.inputs.length === 0}">
