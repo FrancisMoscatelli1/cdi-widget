@@ -13,7 +13,7 @@
     <script src="js/cdi-widget.module.js"></script>
     <script src="js/cdi-widget.service.js"></script>
     <script src="js/cdi-widget.controller.js"></script>
-    <script src="js/cdi-widget.directive.js"></script>
+    <script src="js/cdi-widget.component.js"></script>
 
     <!-- CDI Widget Styles -->
     <link rel="stylesheet" href="css/cdi-widget.css">
@@ -112,7 +112,7 @@
             .controller('AppController', ['$scope', '$timeout', function ($scope, $timeout) {
                 // Configuración del widget
                 $scope.widgetConfig = {
-                    apiDomain: 'http://localhost:3001',
+                    apiDomain: 'http://localhost:9999',
                     userId: 2,
                     userCode: '2222',
                     language: 'es'

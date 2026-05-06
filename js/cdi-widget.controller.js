@@ -547,6 +547,13 @@ angular.module('cdiService')
 
                 // Initialize when controller is ready
                 initializeConfig();
+
+                console.log('CDI Widget initialized with:', {
+                    apiDomain: vm.apiDomain,
+                    userId: vm.userId,
+                    userCode: vm.userCode,
+                    language: vm.language
+                });
             };
 
             // Watch for configuration changes from parent scope (test.html)

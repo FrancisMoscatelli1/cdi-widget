@@ -22,7 +22,7 @@ Widget de monitoreo y control para sistemas CDI de EFAISA. Aplicación web Angul
 Este proyecto incluye **dos implementaciones** del mismo widget:
 
 ### 📦 AngularJS (Producción) - `index.html`
-- ✅ **Arquitectura modular** con directiva, servicio y controlador
+- ✅ **Arquitectura modular** con componente, servicio y controlador
 - ✅ **Reutilizable** como componente en apps AngularJS
 - ✅ **Recomendado para producción** e integración en sistemas existentes
 - ✅ Archivos: `js/cdi-widget.*.js`, `templates/cdi-widget.html`
@@ -97,7 +97,7 @@ La forma más limpia y reutilizable:
 <script src="js/cdi-widget.module.js"></script>
 <script src="js/cdi-widget.service.js"></script>
 <script src="js/cdi-widget.controller.js"></script>
-<script src="js/cdi-widget.directive.js"></script>
+<script src="js/cdi-widget.component.js"></script>
 <link rel="stylesheet" href="css/cdi-widget.css">
 
 <script>
@@ -153,7 +153,7 @@ tu-proyecto/
         │   ├── cdi-widget.module.js
         │   ├── cdi-widget.service.js
         │   ├── cdi-widget.controller.js
-        │   └── cdi-widget.directive.js
+        │   └── cdi-widget.component.js
         ├── templates/
         │   └── cdi-widget.html
         ├── css/
@@ -178,7 +178,7 @@ tu-proyecto/
     <script src="widgets/cdi-widget/js/cdi-widget.module.js"></script>
     <script src="widgets/cdi-widget/js/cdi-widget.service.js"></script>
     <script src="widgets/cdi-widget/js/cdi-widget.controller.js"></script>
-    <script src="widgets/cdi-widget/js/cdi-widget.directive.js"></script>
+    <script src="widgets/cdi-widget/js/cdi-widget.component.js"></script>
     <link rel="stylesheet" href="widgets/cdi-widget/css/cdi-widget.css">
 </head>
 <body>
@@ -230,7 +230,7 @@ angular.module('myApp', ['cdiWidget']);
     <script src="cdi-widget/js/cdi-widget.module.js"></script>
     <script src="cdi-widget/js/cdi-widget.service.js"></script>
     <script src="cdi-widget/js/cdi-widget.controller.js"></script>
-    <script src="cdi-widget/js/cdi-widget.directive.js"></script>
+    <script src="cdi-widget/js/cdi-widget.component.js"></script>
     <link rel="stylesheet" href="cdi-widget/css/cdi-widget.css">
     
     <style>
@@ -480,7 +480,7 @@ cdi-widget/
 │   ├── cdi-widget.module.js          # Módulo AngularJS y configuraciones
 │   ├── cdi-widget.service.js         # Servicio para llamadas API
 │   ├── cdi-widget.controller.js      # Lógica principal del widget
-│   └── cdi-widget.directive.js       # Directiva <cdi-widget>
+│   └── cdi-widget.component.js       # Componente <cdi-widget>
 │
 ├── templates/
 │   └── cdi-widget.html               # Template HTML del widget
