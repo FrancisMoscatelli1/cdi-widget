@@ -285,7 +285,7 @@ angular.module('cdiService')
                     vm.statusBarIconsLeft.push({ name: 'test', alt: 'Test' });
                 }
                 if (vm.barStatus.extinction) {
-                    vm.statusBarIconsLeft.push({ name: 'extinguisher', alt: 'Extinción' });
+                    vm.statusBarIconsLeft.push({ name: 'extinction', alt: 'Extinción' });
                 }
 
                 // Update right container icons
