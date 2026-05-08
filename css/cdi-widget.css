@@ -94,8 +94,17 @@ main.row {
 
 .icon {
     height: 28px;
-    width: auto;
+    width: 28px;
     padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon svg,
+.icon-svg {
+    height: 100%;
+    width: 100%;
 }
 
 .nombre {

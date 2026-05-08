@@ -29,8 +29,18 @@ angular.module('cdiService')
 
             // Widget state
             vm.installationName = '';
-            vm.lines = [];
-            vm.inputs = [];
+            // vm.lines = [];
+            // vm.inputs = [];
+            // DATOS DEMOSTRACION
+            vm.lines = [
+                { number: 1, status: 2, enable: 1, alias: 'Pasillo Norte' },
+                { number: 2, status: 6, enable: 1, alias: 'Cocina Central' },
+                { number: 3, status: 8, enable: 1, alias: 'Depósito A' }
+            ];
+            vm.inputs = [
+                { number: 1, status: 1, enable: 1, alias: 'Pulsador Emergencia' },
+                { number: 2, status: 5, enable: 1, alias: 'Sensor Humo' }
+            ];
             vm.barStatus = {
                 // (left container)
                 alarm: false,
@@ -260,61 +270,61 @@ angular.module('cdiService')
                 vm.statusBarIconsLeft = [];
 
                 if (vm.barStatus.alarm) {
-                    vm.statusBarIconsLeft.push({ src: 'assets/icons/bell.svg', alt: 'Alarma' });
+                    vm.statusBarIconsLeft.push({ name: 'bell', alt: 'Alarma' });
                 }
                 if (vm.barStatus.fault) {
-                    vm.statusBarIconsLeft.push({ src: 'assets/icons/fault.svg', alt: 'Falla' });
+                    vm.statusBarIconsLeft.push({ name: 'fault', alt: 'Falla' });
                 }
                 if (vm.barStatus.disconnect) {
-                    vm.statusBarIconsLeft.push({ src: 'assets/icons/disconnect.svg', alt: 'Desconexión' });
+                    vm.statusBarIconsLeft.push({ name: 'disconnect', alt: 'Desconexión' });
                 }
                 if (vm.barStatus.ground) {
-                    vm.statusBarIconsLeft.push({ src: 'assets/icons/groundconnection.svg', alt: 'Tierra' });
+                    vm.statusBarIconsLeft.push({ name: 'groundconnection', alt: 'Tierra' });
                 }
                 if (vm.barStatus.test) {
-                    vm.statusBarIconsLeft.push({ src: 'assets/icons/test.svg', alt: 'Test' });
+                    vm.statusBarIconsLeft.push({ name: 'test', alt: 'Test' });
                 }
                 if (vm.barStatus.extinction) {
-                    vm.statusBarIconsLeft.push({ src: 'assets/icons/extinction.png', alt: 'Extinción' });
+                    vm.statusBarIconsLeft.push({ name: 'extinguisher', alt: 'Extinción' });
                 }
 
                 // Update right container icons
                 const battery = vm.barStatus.battery;
-                let batteryIcon = 'assets/icons/batteryfault.svg';
+                let batteryIcon = 'batteryfault';
                 let batteryAlt = 'Batería: Falla';
 
                 if (battery === 100) {
-                    batteryIcon = 'assets/icons/battery100.svg';
+                    batteryIcon = 'battery100';
                     batteryAlt = 'Batería: 100%';
                 } else if (battery >= 75) {
-                    batteryIcon = 'assets/icons/battery75.svg';
+                    batteryIcon = 'battery75';
                     batteryAlt = 'Batería: 75%';
                 } else if (battery >= 50) {
-                    batteryIcon = 'assets/icons/battery50.svg';
+                    batteryIcon = 'battery50';
                     batteryAlt = 'Batería: 50%';
                 } else if (battery <= 25 && battery > 1) {
-                    batteryIcon = 'assets/icons/battery25.svg';
+                    batteryIcon = 'battery25';
                     batteryAlt = 'Batería: 25%';
                 }
 
                 const powerIcon = vm.barStatus.powerSupply
-                    ? 'assets/icons/powersupplynormal.svg'
-                    : 'assets/icons/powersupplyfault.svg';
+                    ? 'powersupplynormal'
+                    : 'powersupplyfault';
                 const powerAlt = vm.barStatus.powerSupply
                     ? 'Alimentación OK'
                     : 'Falla de alimentación';
 
                 const networkIcon = vm.barStatus.network
-                    ? 'assets/icons/networknormal.svg'
-                    : 'assets/icons/networkfault.svg';
+                    ? 'networknormal'
+                    : 'networkfault';
                 const networkAlt = vm.barStatus.network
                     ? 'Red conectada'
                     : 'Red desconectada';
 
                 vm.statusBarIconsRight = [
-                    { src: batteryIcon, alt: batteryAlt },
-                    { src: powerIcon, alt: powerAlt },
-                    { src: networkIcon, alt: networkAlt }
+                    { name: batteryIcon, alt: batteryAlt },
+                    { name: powerIcon, alt: powerAlt },
+                    { name: networkIcon, alt: networkAlt }
                 ];
 
                 // Save current state for next comparison
@@ -356,25 +366,25 @@ angular.module('cdiService')
             vm.getBarIcon = function (type, status) {
                 if (type === 'line') {
                     switch (status) {
-                        case 0: return 'assets/icons/check.svg';
-                        case 2: return 'assets/icons/bell.svg';
-                        case 3: return 'assets/icons/bell.svg';
-                        case 4: return 'assets/icons/bell.svg';
-                        case 6: return 'assets/icons/fault.svg';
-                        case 7: return 'assets/icons/fault.svg';
-                        case 8: return 'assets/icons/disconnect.svg';
-                        default: return 'assets/icons/check.svg';
+                        case 0: return 'check';
+                        case 2: return 'bell';
+                        case 3: return 'bell';
+                        case 4: return 'bell';
+                        case 6: return 'fault';
+                        case 7: return 'fault';
+                        case 8: return 'disconnect';
+                        default: return 'check';
                     }
                 } else {
                     switch (status) {
-                        case 0: return 'assets/icons/check.svg';
-                        case 1: return 'assets/icons/bell.svg';
-                        case 4: return 'assets/icons/bell.svg';
-                        case 5: return 'assets/icons/fault.svg';
-                        case 8: return 'assets/icons/fault.svg';
-                        case 9: return 'assets/icons/bell.svg';
-                        case 12: return 'assets/icons/bell.svg';
-                        default: return 'assets/icons/check.svg';
+                        case 0: return 'check';
+                        case 1: return 'bell';
+                        case 4: return 'bell';
+                        case 5: return 'fault';
+                        case 8: return 'fault';
+                        case 9: return 'bell';
+                        case 12: return 'bell';
+                        default: return 'check';
                     }
                 }
             };
