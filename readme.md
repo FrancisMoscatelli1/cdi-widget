@@ -27,13 +27,8 @@ Este proyecto incluye **dos implementaciones** del mismo widget:
 - ✅ **Recomendado para producción** e integración en sistemas existentes
 - ✅ Archivos: `js/cdi-widget.*.js`, `templates/cdi-widget.html`
 
-### 🎨 Vanilla JS (Testing/Demo) - `test.html`
-- ✅ **Sin dependencias** de frameworks
-- ✅ **Archivo único** (HTML + CSS + JS todo en uno)
-- ✅ **Ideal para demos** y pruebas rápidas sin backend
-- ✅ Se puede abrir directamente en el navegador
 
-**💡 Recomendación:** Usa `index.html` (AngularJS) para integrar en tu aplicación. Usa `test.html` (Vanilla JS) solo para testing local y demos.
+**💡 Recomendación:** Usa `index.html` (AngularJS) para integrar en tu aplicación.
 
 ---
 
@@ -53,15 +48,6 @@ Este proyecto incluye **dos implementaciones** del mismo widget:
 ---
 
 ## 🚀 Inicio Rápido
-
-### Opción más rápida: Ver demo con Vanilla JS
-
-Abre este archivo en tu navegador:
-```
-test.html
-```
-
-⚠️ **Nota:** `test.html` es una versión **Vanilla JavaScript** (sin framework) del widget, perfecta para testing y demos sin necesidad de API.
 
 ### Con tu propia API (AngularJS)
 
@@ -106,38 +92,6 @@ La forma más limpia y reutilizable:
 ```
 
 **Ver ejemplo:** [index.html](index.html)
-
----
-
-### 2️⃣ Standalone Vanilla JS (Sin API - Para pruebas)
-
-Abre directamente en el navegador:
-```
-test.html
-```
-
-⚠️ **Importante:** Este archivo usa **Vanilla JavaScript puro** (sin AngularJS), ideal para:
-- ✅ Testing sin backend
-- ✅ Desarrollo front-end aislado
-- ✅ Demos y presentaciones
-- ✅ Pruebas rápidas sin dependencias
-
-**No requiere:** AngularJS, npm, ni servidor web
-
----
-
-### 3️⃣ URL Parameters (Vanilla JS)
-
-```
-test.html?apiDomain=http://api.com&userId=123&code=abc123&language=es
-```
-
-✅ **Nota:** `test.html` usa **Vanilla JS** con la versión standalone del widget.
-Parámetros disponibles:
-- `apiDomain` - URL base de tu API (requerido)
-- `userId` - ID del usuario (requerido)
-- `code` - Código de autenticación (requerido)
-- `language` - Idioma: es, en, pt, it (opcional, default: es)
 
 ---
 
@@ -490,34 +444,14 @@ cdi-widget/
 │
 ├── assets/
 │   └── icons/                        # Iconos SVG/PNG
-│       ├── bell.svg
-│       ├── fault.svg
-│       ├── disconnect.svg
-│       ├── groundconnection.svg
-│       ├── test.svg
-│       ├── extinction.png
-│       ├── battery100.svg
-│       ├── battery75.svg
-│       ├── battery50.svg
-│       ├── battery25.svg
-│       ├── batteryfault.svg
-│       ├── powersupplynormal.svg
-│       ├── powersupplyfault.svg
-│       ├── networknormal.svg
-│       ├── networkfault.svg
-│       ├── check.svg
-│       ├── reset.svg
-│       ├── line.svg
-│       └── input.svg
+│       ├── sprite.svg
 │
 ├── index.html                        # AngularJS - Ejemplo directiva (PRODUCCIÓN)
-├── test.html                         # Vanilla JS - Demo standalone
 └── README.md                         # Esta documentación
 ```
 
 **Nota:** 
 - `index.html` = Versión **AngularJS** modular con directivas, servicios y controladores
-- `test.html` = Versión **Vanilla JS** (sin framework), todo en un archivo único
 
 ---
 
@@ -698,17 +632,6 @@ angular.element(document.querySelector('[ng-controller=CdiWidgetController]')).s
 angular.element(document.querySelector('[ng-controller=CdiWidgetController]')).scope().inputs
 ```
 
-### Testing con datos simulados (Vanilla JS)
-
-Use `test.html` para probar sin API:
-
-1. Abre `test.html` en tu navegador
-2. El widget funciona inmediatamente con datos de ejemplo
-3. No requiere AngularJS ni servidor backend
-4. Perfecto para validar estilos y funcionalidad básica
-
-⚠️ **Importante:** `test.html` es la versión **Vanilla JavaScript** (sin AngularJS). Para testing de la versión AngularJS con tu API real, usa `index.html` con los parámetros URL.
-
 ---
 
 ## 📱 Responsive Design
@@ -880,12 +803,6 @@ Este proyecto proporciona **dos implementaciones**:
    - Directiva reutilizable `<cdi-widget>`
    - Para integración en aplicaciones
    - Requiere: AngularJS 1.6.9+
-
-2. **Vanilla JS (`test.html`)** 🧪 SOLO TESTING
-   - Sin dependencias de frameworks
-   - Archivo único standalone
-   - Para demos y pruebas locales
-   - No requiere instalación
 
 ### Compatibilidad
 
