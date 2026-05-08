@@ -62,7 +62,7 @@
     <div class="column button-container">
         <!-- Acknowledge Button -->
         <button class="barbutton" ng-click="vm.acknowledge()" ng-disabled="!vm.buttons.acknowledge" type="button">
-            <img src="assets/icons/check.svg" alt="Acknowledge">
+            <span ng-bind-html="vm.getIcon('check')"></span>
             <span>{{vm.t('main.buttons.acknowledge')}}</span>
         </button>
 
@@ -70,7 +70,7 @@
 
         <!-- Reset Button -->
         <button class="barbutton" ng-click="vm.reset()" ng-disabled="!vm.buttons.reset" type="button">
-            <img src="assets/icons/reset.svg" alt="Reset">
+            <span ng-bind-html="vm.getIcon('reset')"></span>
             <span>{{vm.t('main.buttons.reset')}}</span>
         </button>
 
@@ -78,9 +78,10 @@
 
         <!-- Test Button -->
         <button class="barbutton" ng-click="vm.test()" ng-disabled="!vm.buttons.test" type="button">
-            <img src="assets/icons/test.svg" alt="Test">
+            <span ng-bind-html="vm.getIcon('test')"></span>
             <span>{{vm.t('main.buttons.test')}}</span>
         </button>
+
     </div>
 </main>
 

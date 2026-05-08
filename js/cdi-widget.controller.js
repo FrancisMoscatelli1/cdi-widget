@@ -4,12 +4,17 @@
  */
 angular.module('cdiService')
     .controller('CdiWidgetController', [
-        '$scope', '$interval', '$timeout', 'CdiWidgetService', 'CDI_CONFIG',
-        function ($scope, $interval, $timeout, CdiWidgetService, CDI_CONFIG) {
+        '$scope', '$interval', '$timeout', '$sce', 'CdiWidgetService', 'CDI_CONFIG',
+        function ($scope, $interval, $timeout, $sce, CdiWidgetService, CDI_CONFIG) {
 
             // ==================== INITIALIZATION ====================
 
             const vm = this;
+
+            vm.getIcon = function (name) {
+                var html = '<svg class="icon-svg"><use xlink:href="assets/icons/sprite.svg#icon-' + name + '"></use></svg>';
+                return $sce.trustAsHtml(html);
+            };
 
             vm.isAuthenticated = false;
             vm.showLoader = false;

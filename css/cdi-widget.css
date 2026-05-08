@@ -133,10 +133,11 @@ main.row {
     margin: 12px 0;
 }
 
-.barbutton img {
+.barbutton svg {
     height: 32px;
-    width: auto;
+    width: 32px;
     margin: 4px;
+    padding: 0px;
 }
 
 .barbutton span {
