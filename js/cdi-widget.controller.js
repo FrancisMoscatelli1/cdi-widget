@@ -29,18 +29,18 @@ angular.module('cdiService')
 
             // Widget state
             vm.installationName = '';
-            // vm.lines = [];
-            // vm.inputs = [];
+            vm.lines = [];
+            vm.inputs = [];
             // DATOS DEMOSTRACION
-            vm.lines = [
-                { number: 1, status: 2, enable: 1, alias: 'Pasillo Norte' },
-                { number: 2, status: 6, enable: 1, alias: 'Cocina Central' },
-                { number: 3, status: 8, enable: 1, alias: 'Depósito A' }
-            ];
-            vm.inputs = [
-                { number: 1, status: 1, enable: 1, alias: 'Pulsador Emergencia' },
-                { number: 2, status: 5, enable: 1, alias: 'Sensor Humo' }
-            ];
+            // vm.lines = [
+            //     { number: 1, status: 2, enable: 1, alias: 'Pasillo Norte' },
+            //     { number: 2, status: 6, enable: 1, alias: 'Cocina Central' },
+            //     { number: 3, status: 8, enable: 1, alias: 'Depósito A' }
+            // ];
+            // vm.inputs = [
+            //     { number: 1, status: 1, enable: 1, alias: 'Pulsador Emergencia' },
+            //     { number: 2, status: 5, enable: 1, alias: 'Sensor Humo' }
+            // ];
             vm.barStatus = {
                 // (left container)
                 alarm: false,
