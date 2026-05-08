@@ -12,7 +12,7 @@ angular.module('cdiService')
             const vm = this;
 
             vm.getIcon = function (name) {
-                var html = '<svg class="icon-svg"><use xlink:href="assets/icons/sprite.svg#icon-' + name + '"></use></svg>';
+                var html = '<svg class="icon-svg"><use xlink:href="#icon-' + name + '"></use></svg>';
                 return $sce.trustAsHtml(html);
             };
 

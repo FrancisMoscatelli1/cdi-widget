@@ -442,10 +442,6 @@ cdi-widget/
 ├── css/
 │   └── cdi-widget.css                # Estilos responsive
 │
-├── assets/
-│   └── icons/                        # Iconos SVG/PNG
-│       ├── sprite.svg
-│
 ├── index.html                        # AngularJS - Ejemplo directiva (PRODUCCIÓN)
 └── README.md                         # Esta documentación
 ```
@@ -583,17 +579,6 @@ Verifica que la autenticación sea exitosa en la consola:
 ```
 User authenticated successfully ✓
 ```
-
-### Iconos no se muestran
-
-Verifica que la ruta sea correcta:
-```
-assets/icons/bell.svg
-assets/icons/fault.svg
-// etc...
-```
-
-Comprueba en Network tab (F12) que no hay 404 errors.
 
 ### Estilos rotos
 
