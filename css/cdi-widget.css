@@ -204,7 +204,7 @@ main.row {
 /* ESTILO BARRAS */
 
 /* MODAL STYLES */
-.modal {
+.modal-cdi {
     display: none;
     position: fixed;
     z-index: 1000;
@@ -215,11 +215,11 @@ main.row {
     background-color: rgba(0, 0, 0, 0.7);
 }
 
-.modal.show {
+.modal-cdi.show {
     display: block;
 }
 
-.modal-content {
+.modal-cdi-content {
     background-color: #dddee1;
     border: 1px solid #d3d5d8;
     border-radius: 10px;
@@ -231,7 +231,7 @@ main.row {
     padding: 24px;
 }
 
-.modal-content.alert {
+.modal-cdi-content.alert {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -241,13 +241,13 @@ main.row {
     top: 25%;
 }
 
-.modal-content.loader-modal {
+.modal-cdi-content.loader-modal {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.modal-button {
+.modal-cdi-button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -261,16 +261,16 @@ main.row {
     cursor: pointer;
 }
 
-.modal-button:hover {
+.modal-cdi-button:hover {
     background-color: #e2e6ea;
 }
 
-.modal-header {
+.modal-cdi-header {
     font-size: 40px;
     margin: 0px;
 }
 
-.modal-row {
+.modal-cdi-row {
     display: flex;
     justify-content: center;
 }

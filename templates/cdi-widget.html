@@ -333,18 +333,18 @@
 </main>
 
 <!-- Alert Modal -->
-<div class="modal" ng-class="{show: vm.alert.show}">
-    <div class="modal-content alert">
+<div class="modal-cdi" ng-class="{show: vm.alert.show}">
+    <div class="modal-cdi-content alert">
         <div>
             <div>
-                <h3 class="modal-header">{{vm.alert.title}}</h3>
+                <h3 class="modal-cdi-header">{{vm.alert.title}}</h3>
             </div>
             <div>
                 <p class="etiquetap">{{vm.alert.content}}</p>
             </div>
         </div>
-        <div class="modal-row">
-            <button class="modal-button" ng-click="vm.closeAlert()" type="button">
+        <div class="modal-cdi-row">
+            <button class="modal-cdi-button" ng-click="vm.closeAlert()" type="button">
                 OK
             </button>
         </div>
@@ -352,10 +352,10 @@
 </div>
 
 <!-- Loader Modal -->
-<div class="modal" ng-class="{show: vm.showLoader}">
-    <div class="modal-content loader-modal">
+<div class="modal-cdi" ng-class="{show: vm.showLoader}">
+    <div class="modal-cdi-content loader-modal">
         <div>
-            <h3 class="modal-header">{{vm.loaderText}}</h3>
+            <h3 class="modal-cdi-header">{{vm.loaderText}}</h3>
         </div>
         <div style="display: flex; justify-content: center;">
             <div style="width: 48px;">
