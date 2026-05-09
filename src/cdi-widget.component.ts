@@ -110,6 +110,7 @@ angular.module('cdiService')
                         vm.isConfigured = true;
                         authenticate();
                         loadInitialData();
+                        loadStatusData();
                         startAutoRefresh();
                     }
                 }
@@ -146,8 +147,6 @@ angular.module('cdiService')
                         .catch(function (error: any) {
                             console.error('Error loading general config:', error);
                         });
-
-                    loadStatusData();
                 }
 
                 function loadStatusData() {
