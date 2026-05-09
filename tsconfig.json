@@ -3,7 +3,7 @@
     "ignoreDeprecations": "6.0",
     "target": "ES5",
     "module": "None",
-    "outDir": "./js",
+    "outDir": "./dist",
     "rootDir": "./src",
     "strict": false,
     "esModuleInterop": true,
@@ -11,8 +11,14 @@
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "allowJs": true,
-    "types": ["angular"]
+    "types": [
+      "angular"
+    ]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
