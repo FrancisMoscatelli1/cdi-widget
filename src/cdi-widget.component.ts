@@ -109,6 +109,8 @@ angular.module('cdiService')
                     if (vm.apiDomain && vm.userId && vm.userCode) {
                         vm.isConfigured = true;
                         authenticate();
+                        loadInitialData();
+                        startAutoRefresh();
                     }
                 }
 
@@ -123,8 +125,6 @@ angular.module('cdiService')
                                 vm.buttons.reset = true;
                                 vm.buttons.test = true;
                                 console.log('User authenticated successfully');
-                                loadInitialData();
-                                startAutoRefresh();
                             } else {
                                 showAlert('Error', 'Authentication failed. Invalid credentials.');
                             }
