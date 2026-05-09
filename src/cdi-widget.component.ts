@@ -4,7 +4,7 @@
  */
 angular.module('cdiService')
     .component('cdiWidget', {
-        templateUrl: 'templates/cdi-widget.html',
+        templateUrl: 'src/cdi-widget.html',
         bindings: {
             apiDomain: '@',
             userId: '@',
