@@ -432,8 +432,5 @@ angular.module('cdiService')
                     initializeConfig();
                     console.log('CDI Widget initialized');
                 };
-
-
-                vm.$onInit()
             }]
     });
