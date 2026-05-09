@@ -161,9 +161,10 @@ angular.module('cdiService')
 
                     CdiWidgetService.getLinesStatus(vm.apiDomain)
                         .then(function (data: any) {
-                            const lines = data['LINEAS'] || []
+                            const lines = (data['LINEAS'] || [])
                                 .filter((line: any) => line.status !== 0);
-                            const inputs = data['ENTRADAS'] || []
+
+                            const inputs = (data['ENTRADAS'] || [])
                                 .filter((input: any) => input.status !== 0);
 
                             if (!hasArrayChanged(previousLinesData, lines) && !hasArrayChanged(previousInputsData, inputs)) {
