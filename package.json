@@ -1,0 +1,17 @@
+{
+  "name": "cdi-widget",
+  "version": "1.0.0",
+  "description": "Widget de monitoreo y control para sistemas CDI de EFAISA. Aplicación web AngularJS completamente responsive que permite visualizar el estado de líneas y entradas en tiempo real, así como ejecutar comandos de control del sistema.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/angular": "^1.8.9",
+    "typescript": "^6.0.3"
+  }
+}
