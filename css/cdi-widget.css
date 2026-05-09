@@ -203,10 +203,17 @@ main.row {
 
 /* ESTILO BARRAS */
 
+.cdi-widget-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
 /* MODAL STYLES */
 .modal-cdi {
     display: none;
-    position: fixed;
+    position: absolute;
     z-index: 1000;
     left: 0;
     top: 0;
