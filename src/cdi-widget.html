@@ -583,34 +583,34 @@
         <h3 style="color: #856404;">⚠️ Widget CDI no configurado</h3>
     </div>
 
-    <!-- Status Bar Header -->
-    <header ng-if="vm.isConfigured">
-        <nav class="status-bar">
-            <div class="icon-container left">
-                <span ng-repeat="icon in vm.statusBarIconsLeft" ng-bind-html="vm.getIcon(icon.name)" class="icon"
-                    title="{{icon.alt}}"></span>
-            </div>
-
-            <h1 class="nombre">{{vm.installationName}}</h1>
-
-            <div class="icon-container right">
-                <span ng-repeat="icon in vm.statusBarIconsRight" ng-bind-html="vm.getIcon(icon.name)" class="icon"
-                    title="{{icon.alt}}"></span>
-            </div>
-        </nav>
-    </header>
+    <!-- Header with Installation Name removed (moved to normal state view) -->
 
     <!-- Main content -->
     <main class="cdi-main row" ng-if="vm.isConfigured">
 
         <!-- Bars container (Lines and Inputs) -->
-        <div class="bar-container" ng-class="{message: vm.lines.length === 0 && vm.inputs.length === 0}">
-            <!-- Display bars only when not loading -->
-            <ng-show ng-if="vm.lines.length === 0 && vm.inputs.length === 0">
-                <h3 class="main-header-title">
+        <div class="bar-container"
+            ng-class="{message: vm.lines.length === 0 && vm.inputs.length === 0 && vm.systemBars.length === 0 }">
+            <!-- Display Title only when not loading and no lines/inputs/system bars -->
+            <ng-show ng-if="vm.lines.length === 0 && vm.inputs.length === 0 && vm.systemBars.length === 0">
+                <h2 class="main-header-title" style="margin-bottom: 12px;">
+                    {{vm.installationName}}
+                </h2>
+                <h3 class="main-header-title" style="color: #badbcc; font-size: 20px;">
                     {{vm.t('main.lineAndInputNormalization')}}
                 </h3>
             </ng-show>
+
+            <!-- System Bars -->
+            <div ng-repeat="bar in vm.systemBars" class="bar show {{bar.color}}">
+                <div class="bar-content-container">
+                    <span ng-bind-html="vm.getIcon(bar.icon)" class="icon"></span>
+                    <div class="bar-text">
+                        <strong>{{bar.name}}</strong>
+                        <div><span>{{bar.text}}</span></div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Lines -->
             <div ng-repeat="line in vm.lines" ng-if="vm.shouldShowBar(line)"

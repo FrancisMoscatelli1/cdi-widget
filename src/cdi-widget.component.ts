@@ -73,8 +73,7 @@ angular.module('cdiService')
                 };
 
                 // Cached icon arrays (to prevent infinite digest)
-                vm.statusBarIconsLeft = [];
-                vm.statusBarIconsRight = [];
+                vm.systemBars = [];
 
                 // Previous barStatus to detect changes
                 let previousBarStatus = {} as any;
@@ -240,33 +239,43 @@ angular.module('cdiService')
                         return;
                     }
 
-                    vm.statusBarIconsLeft = [];
-                    if (vm.barStatus.alarm) vm.statusBarIconsLeft.push({ name: 'bell', alt: 'Alarma' });
-                    if (vm.barStatus.fault) vm.statusBarIconsLeft.push({ name: 'fault', alt: 'Falla' });
-                    if (vm.barStatus.disconnect) vm.statusBarIconsLeft.push({ name: 'disconnect', alt: 'Desconexión' });
-                    if (vm.barStatus.ground) vm.statusBarIconsLeft.push({ name: 'groundconnection', alt: 'Tierra' });
-                    if (vm.barStatus.test) vm.statusBarIconsLeft.push({ name: 'test', alt: 'Test' });
-                    if (vm.barStatus.extinction) vm.statusBarIconsLeft.push({ name: 'extinction', alt: 'Extinción' });
+                    vm.systemBars = [];
+
+                    if (vm.barStatus.alarm) vm.systemBars.push({ icon: 'bell', name: 'Alarma General', text: '', color: 'red' });
+                    if (vm.barStatus.fault) vm.systemBars.push({ icon: 'fault', name: 'Falla General', text: '', color: 'yellow' });
+                    if (vm.barStatus.disconnect) vm.systemBars.push({ icon: 'disconnect', name: 'Falla', text: 'Desconexión', color: 'yellow' });
+                    if (vm.barStatus.ground) vm.systemBars.push({ icon: 'groundconnection', name: 'Falla', text: 'Fuga a tierra', color: 'yellow' });
+                    if (vm.barStatus.test) vm.systemBars.push({ icon: 'test', name: 'Equipo en prueba', text: '', color: 'green' });
+                    if (vm.barStatus.extinction) vm.systemBars.push({ icon: 'extinction', name: 'Extinción', text: '', color: 'red' });
 
                     const battery = vm.barStatus.battery;
                     let batteryIcon = 'batteryfault';
-                    let batteryAlt = 'Batería: Falla';
+                    let batteryText = 'Falla';
+                    let batteryColor = 'red';
+                    const batteryPercentage = battery.toString() + '%';
 
-                    if (battery === 100) { batteryIcon = 'battery100'; batteryAlt = 'Batería: 100%'; }
-                    else if (battery >= 75) { batteryIcon = 'battery75'; batteryAlt = 'Batería: 75%'; }
-                    else if (battery >= 50) { batteryIcon = 'battery50'; batteryAlt = 'Batería: 50%'; }
-                    else if (battery <= 25 && battery > 1) { batteryIcon = 'battery25'; batteryAlt = 'Batería: 25%'; }
+                    if (battery === 100) { batteryIcon = 'battery100'; batteryText = batteryPercentage; batteryColor = 'green'; }
+                    else if (battery >= 75) { batteryIcon = 'battery75'; batteryText = batteryPercentage; batteryColor = 'yellow'; }
+                    else if (battery >= 50) { batteryIcon = 'battery50'; batteryText = batteryPercentage; batteryColor = 'yellow'; }
+                    else if (battery <= 25 && battery > 1) { batteryIcon = 'battery25'; batteryText = batteryPercentage; batteryColor = 'yellow'; }
+
+                    if (battery !== 100) {
+                        vm.systemBars.push({ icon: batteryIcon, name: 'Batería', text: batteryText, color: batteryColor });
+                    }
 
                     const powerIcon = vm.barStatus.powerSupply ? 'powersupplynormal' : 'powersupplyfault';
-                    const powerAlt = vm.barStatus.powerSupply ? 'Alimentación OK' : 'Falla de alimentación';
-                    const networkIcon = vm.barStatus.network ? 'networknormal' : 'networkfault';
-                    const networkAlt = vm.barStatus.network ? 'Red conectada' : 'Red desconectada';
+                    const powerText = vm.barStatus.powerSupply ? 'Normal' : 'Falla';
+                    const powerColor = vm.barStatus.powerSupply ? 'green' : 'yellow';
+                    if (!vm.barStatus.powerSupply) {
+                        vm.systemBars.push({ icon: powerIcon, name: 'Alimentación', text: powerText, color: powerColor });
+                    }
 
-                    vm.statusBarIconsRight = [
-                        { name: batteryIcon, alt: batteryAlt },
-                        { name: powerIcon, alt: powerAlt },
-                        { name: networkIcon, alt: networkAlt }
-                    ];
+                    const networkIcon = vm.barStatus.network ? 'networknormal' : 'networkfault';
+                    const networkText = vm.barStatus.network ? 'Normal' : 'Falla';
+                    const networkColor = vm.barStatus.network ? 'green' : 'yellow';
+                    if (!vm.barStatus.network) {
+                        vm.systemBars.push({ icon: networkIcon, name: 'Red', text: networkText, color: networkColor });
+                    }
 
                     previousBarStatus = angular.copy(vm.barStatus);
                 }
