@@ -46,18 +46,11 @@ angular.module('cdiService')
 
                 // Widget state
                 vm.installationName = '';
-                vm.lines = [];
-                vm.inputs = [];
-                // DATOS DEMOSTRACION
-                // vm.lines = [
-                //     { number: 1, status: 2, enable: 1, alias: 'Pasillo Norte' },
-                //     { number: 2, status: 6, enable: 1, alias: 'Cocina Central' },
-                //     { number: 3, status: 8, enable: 1, alias: 'Depósito A' }
-                // ];
-                // vm.inputs = [
-                //     { number: 1, status: 1, enable: 1, alias: 'Pulsador Emergencia' },
-                //     { number: 2, status: 5, enable: 1, alias: 'Sensor Humo' }
-                // ];
+                vm.bars = [];
+                let currentLines = [];
+                let currentInputs = [];
+                let currentSystemBars = [];
+
                 vm.barStatus = {
                     // (left container)
                     alarm: false,
@@ -71,9 +64,6 @@ angular.module('cdiService')
                     powerSupply: false,
                     network: false
                 };
-
-                // Cached icon arrays (to prevent infinite digest)
-                vm.systemBars = [];
 
                 // Previous barStatus to detect changes
                 let previousBarStatus = {} as any;
@@ -159,6 +149,17 @@ angular.module('cdiService')
 
                     CdiWidgetService.getLinesStatus(vm.apiDomain)
                         .then(function (data: any) {
+
+                            // DATOS DEMOSTRACION
+                            // const lines = [
+                            //     { number: 1, status: 2, enable: 1, alias: 'Pasillo Norte' },
+                            //     { number: 2, status: 6, enable: 1, alias: 'Cocina Central' },
+                            //     { number: 3, status: 8, enable: 1, alias: 'Depósito A' }
+                            // ];
+                            // const inputs = [
+                            //     { number: 1, status: 1, enable: 1, alias: 'Pulsador Emergencia' },
+                            //     { number: 2, status: 5, enable: 1, alias: 'Sensor Humo' }
+                            // ];
                             const lines = (data['LINEAS'] || [])
                                 .filter((line: any) => line.status !== 0);
 
@@ -169,8 +170,9 @@ angular.module('cdiService')
                                 return;
                             }
 
-                            vm.lines = orderLines(lines);
-                            vm.inputs = orderInputs(inputs);
+                            currentLines = orderLines(lines);
+                            currentInputs = orderInputs(inputs);
+                            updateBars();
 
                             previousLinesData = angular.copy(lines);
                             previousInputsData = angular.copy(inputs);
@@ -239,14 +241,14 @@ angular.module('cdiService')
                         return;
                     }
 
-                    vm.systemBars = [];
+                    currentSystemBars = [];
 
-                    if (vm.barStatus.alarm) vm.systemBars.push({ icon: 'bell', name: 'Alarma General', text: '', color: 'red' });
-                    if (vm.barStatus.fault) vm.systemBars.push({ icon: 'fault', name: 'Falla General', text: '', color: 'yellow' });
-                    if (vm.barStatus.disconnect) vm.systemBars.push({ icon: 'disconnect', name: 'Falla', text: 'Desconexión', color: 'yellow' });
-                    if (vm.barStatus.ground) vm.systemBars.push({ icon: 'groundconnection', name: 'Falla', text: 'Fuga a tierra', color: 'yellow' });
-                    if (vm.barStatus.test) vm.systemBars.push({ icon: 'test', name: 'Equipo en prueba', text: '', color: 'green' });
-                    if (vm.barStatus.extinction) vm.systemBars.push({ icon: 'extinction', name: 'Extinción', text: '', color: 'red' });
+                    if (vm.barStatus.alarm) currentSystemBars.push({ icon: 'bell', name: 'Alarma General', text: '', color: 'red' });
+                    if (vm.barStatus.fault) currentSystemBars.push({ icon: 'fault', name: 'Falla General', text: '', color: 'yellow' });
+                    if (vm.barStatus.disconnect) currentSystemBars.push({ icon: 'disconnect', name: 'Falla', text: 'Desconexión', color: 'yellow' });
+                    if (vm.barStatus.ground) currentSystemBars.push({ icon: 'groundconnection', name: 'Falla', text: 'Fuga a tierra', color: 'yellow' });
+                    if (vm.barStatus.test) currentSystemBars.push({ icon: 'test', name: 'Equipo en prueba', text: '', color: 'green' });
+                    if (vm.barStatus.extinction) currentSystemBars.push({ icon: 'extinction', name: 'Extinción', text: '', color: 'red' });
 
                     const battery = vm.barStatus.battery;
                     let batteryIcon = 'batteryfault';
@@ -260,24 +262,80 @@ angular.module('cdiService')
                     else if (battery <= 25 && battery > 1) { batteryIcon = 'battery25'; batteryText = batteryPercentage; batteryColor = 'yellow'; }
 
                     if (battery !== 100) {
-                        vm.systemBars.push({ icon: batteryIcon, name: 'Batería', text: batteryText, color: batteryColor });
+                        currentSystemBars.push({ icon: batteryIcon, name: 'Batería', text: batteryText, color: batteryColor });
                     }
 
                     const powerIcon = vm.barStatus.powerSupply ? 'powersupplynormal' : 'powersupplyfault';
                     const powerText = vm.barStatus.powerSupply ? 'Normal' : 'Falla';
                     const powerColor = vm.barStatus.powerSupply ? 'green' : 'yellow';
                     if (!vm.barStatus.powerSupply) {
-                        vm.systemBars.push({ icon: powerIcon, name: 'Alimentación', text: powerText, color: powerColor });
+                        currentSystemBars.push({ icon: powerIcon, name: 'Alimentación', text: powerText, color: powerColor });
                     }
 
                     const networkIcon = vm.barStatus.network ? 'networknormal' : 'networkfault';
                     const networkText = vm.barStatus.network ? 'Normal' : 'Falla';
                     const networkColor = vm.barStatus.network ? 'green' : 'yellow';
                     if (!vm.barStatus.network) {
-                        vm.systemBars.push({ icon: networkIcon, name: 'Red', text: networkText, color: networkColor });
+                        currentSystemBars.push({ icon: networkIcon, name: 'Red', text: networkText, color: networkColor });
                     }
 
                     previousBarStatus = angular.copy(vm.barStatus);
+                    updateBars();
+                }
+
+                function updateBars() {
+                    const tempBars = [];
+
+                    // Add system bars
+                    angular.forEach(currentSystemBars, function (bar) {
+                        tempBars.push({
+                            icon: bar.icon,
+                            color: bar.color,
+                            title: bar.name,
+                            text: bar.text
+                        });
+                    });
+
+                    // Add lines
+                    angular.forEach(currentLines, function (line) {
+                        if (vm.shouldShowBar(line)) {
+                            tempBars.push({
+                                icon: vm.getBarIcon('line', line.status),
+                                color: vm.getBarColor('line', line.status),
+                                title: vm.getBarName('line') + ' ' + line.number + ' ' + vm.getStatusText(line.status),
+                                text: line.alias
+                            });
+                        }
+                    });
+
+                    // Add inputs
+                    angular.forEach(currentInputs, function (input) {
+                        if (vm.shouldShowBar(input)) {
+                            tempBars.push({
+                                icon: vm.getBarIcon('input', input.status),
+                                color: vm.getBarColor('input', input.status),
+                                title: vm.getBarName('input') + ' ' + input.number + ' ' + vm.getStatusText(input.status),
+                                text: input.alias
+                            });
+                        }
+                    });
+
+                    // Priority order: Alarm (red), Pre-alarm (orange), Fault (yellow), Normal (green)
+                    const priority = {
+                        'red': 1,
+                        'orange': 2,
+                        'yellow': 3,
+                        'green': 4
+                    };
+
+                    tempBars.sort(function (a, b) {
+                        const pA = priority[a.color] || 99;
+                        const pB = priority[b.color] || 99;
+                        if (pA !== pB) return pA - pB;
+                        return a.title.localeCompare(b.title);
+                    });
+
+                    vm.bars = tempBars;
                 }
 
                 vm.getBarColor = function (type: string, status: number) {

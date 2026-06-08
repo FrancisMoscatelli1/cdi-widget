@@ -588,11 +588,11 @@
     <!-- Main content -->
     <main class="cdi-main row" ng-if="vm.isConfigured">
 
-        <!-- Bars container (Lines and Inputs) -->
+        <!-- Bars container -->
         <div class="bar-container"
-            ng-class="{message: vm.lines.length === 0 && vm.inputs.length === 0 && vm.systemBars.length === 0 }">
-            <!-- Display Title only when not loading and no lines/inputs/system bars -->
-            <ng-show ng-if="vm.lines.length === 0 && vm.inputs.length === 0 && vm.systemBars.length === 0">
+            ng-class="{message: vm.bars.length === 0 }">
+            <!-- Display Title only when not loading and no bars -->
+            <ng-show ng-if="vm.bars.length === 0">
                 <h2 class="main-header-title" style="margin-bottom: 12px;">
                     {{vm.installationName}}
                 </h2>
@@ -601,37 +601,13 @@
                 </h3>
             </ng-show>
 
-            <!-- System Bars -->
-            <div ng-repeat="bar in vm.systemBars" class="bar show {{bar.color}}">
+            <!-- Unified Bars -->
+            <div ng-repeat="bar in vm.bars" class="bar show {{bar.color}}">
                 <div class="bar-content-container">
                     <span ng-bind-html="vm.getIcon(bar.icon)" class="icon"></span>
                     <div class="bar-text">
-                        <strong>{{bar.name}}</strong>
-                        <div><span>{{bar.text}}</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Lines -->
-            <div ng-repeat="line in vm.lines" ng-if="vm.shouldShowBar(line)"
-                class="bar show {{vm.getBarColor('line', line.status)}}">
-                <div class="bar-content-container">
-                    <span ng-bind-html="vm.getIcon(vm.getBarIcon('line', line.status))" class="icon"></span>
-                    <div class="bar-text">
-                        <strong>{{vm.getBarName('line')}} {{line.number}} {{vm.getStatusText(line.status)}}</strong>
-                        <div><span>{{line.alias}}</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Inputs -->
-            <div ng-repeat="input in vm.inputs" ng-if="vm.shouldShowBar(input)"
-                class="bar show {{vm.getBarColor('input', input.status)}}">
-                <div class="bar-content-container">
-                    <span ng-bind-html="vm.getIcon(vm.getBarIcon('input', input.status))" class="icon"></span>
-                    <div class="bar-text">
-                        <strong>{{vm.getBarName('input')}} {{input.number}} {{vm.getStatusText(input.status)}}</strong>
-                        <div><span>{{input.alias}}</span></div>
+                        <strong>{{bar.title}}</strong>
+                        <div ng-if="bar.text"><span>{{bar.text}}</span></div>
                     </div>
                 </div>
             </div>

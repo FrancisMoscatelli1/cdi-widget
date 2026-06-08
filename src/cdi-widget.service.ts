@@ -95,7 +95,7 @@ angular.module('cdiService')
                 }
             },
             main: {
-                lineAndInputNormalization: { es: "Lineas y entradas normalizadas", en: "Line and input normalization", pt: "Normalização de linhas e entradas", it: "Normalizzazione di linee e ingressi" },
+                lineAndInputNormalization: { es: "Equipo normalizado", en: "Device OK", pt: "Equipamento normalizado", it: "Dispositivo OK" },
                 buttons: {
                     acknowledge: { es: "Aceptacion", en: "Acknowledge", pt: "Reconhecimento", it: "Aceptazione" },
                     reset: { es: "Reset", en: "Reset", pt: "Reiniciar", it: "Ripristina" },
