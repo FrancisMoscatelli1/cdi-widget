@@ -243,8 +243,8 @@ angular.module('cdiService')
 
                     currentSystemBars = [];
 
-                    if (vm.barStatus.alarm) currentSystemBars.push({ icon: 'bell', name: 'Alarma General', text: '', color: 'red' });
-                    if (vm.barStatus.fault) currentSystemBars.push({ icon: 'fault', name: 'Falla General', text: '', color: 'yellow' });
+                    // if (vm.barStatus.alarm) currentSystemBars.push({ icon: 'bell', name: 'Alarma General', text: '', color: 'red' });
+                    // if (vm.barStatus.fault) currentSystemBars.push({ icon: 'fault', name: 'Falla General', text: '', color: 'yellow' });
                     if (vm.barStatus.disconnect) currentSystemBars.push({ icon: 'disconnect', name: 'Falla', text: 'Desconexión', color: 'yellow' });
                     if (vm.barStatus.ground) currentSystemBars.push({ icon: 'groundconnection', name: 'Falla', text: 'Fuga a tierra', color: 'yellow' });
                     if (vm.barStatus.test) currentSystemBars.push({ icon: 'test', name: 'Equipo en prueba', text: '', color: 'green' });
@@ -337,6 +337,15 @@ angular.module('cdiService')
 
                     vm.bars = tempBars;
                 }
+
+                vm.getSystemColor = function () {
+                    if (!vm.bars || vm.bars.length === 0) return 'green';
+                    const colors = vm.bars.map(function (b) { return b.color; });
+                    if (colors.indexOf('red') !== -1) return 'red';
+                    if (colors.indexOf('orange') !== -1) return 'orange';
+                    if (colors.indexOf('yellow') !== -1) return 'yellow';
+                    return 'green';
+                };
 
                 vm.getBarColor = function (type: string, status: number) {
                     if (type === 'line') {

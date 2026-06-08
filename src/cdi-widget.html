@@ -6,6 +6,23 @@
         background-color: grey;
         flex-wrap: nowrap;
         margin: 0px;
+        transition: background 0.4s ease;
+    }
+
+    .cdi-main.red {
+        background: linear-gradient(135deg, #e35d5b 0%, #dc3545 100%);
+    }
+
+    .cdi-main.orange {
+        background: linear-gradient(135deg, #ff9233 0%, #fd7e14 100%);
+    }
+
+    .cdi-main.yellow {
+        background: linear-gradient(135deg, #ffe066 0%, #f5c000 100%);
+    }
+
+    .cdi-main.green {
+        background: linear-gradient(135deg, #2ecc71 0%, #198754 100%);
     }
 
     .etiquetap {
@@ -586,7 +603,7 @@
     <!-- Header with Installation Name removed (moved to normal state view) -->
 
     <!-- Main content -->
-    <main class="cdi-main row" ng-if="vm.isConfigured">
+    <main class="cdi-main row {{vm.getSystemColor()}}" ng-if="vm.isConfigured">
 
         <!-- Bars container -->
         <div class="bar-container"
