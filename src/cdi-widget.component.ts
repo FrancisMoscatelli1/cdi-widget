@@ -275,32 +275,19 @@ angular.module('cdiService')
                     if (vm.barStatus.extinction) currentSystemBars.push({ icon: 'extinction', name: 'Extinción', text: '', color: 'red' });
 
                     const battery = vm.barStatus.battery;
-                    let batteryIcon = 'batteryfault';
-                    let batteryText = 'Falla';
-                    let batteryColor = 'red';
                     const batteryPercentage = battery.toString() + '%';
 
-                    if (battery === 100) { batteryIcon = 'battery100'; batteryText = batteryPercentage; batteryColor = 'green'; }
-                    else if (battery >= 75) { batteryIcon = 'battery75'; batteryText = batteryPercentage; batteryColor = 'yellow'; }
-                    else if (battery >= 50) { batteryIcon = 'battery50'; batteryText = batteryPercentage; batteryColor = 'yellow'; }
-                    else if (battery <= 25 && battery > 1) { batteryIcon = 'battery25'; batteryText = batteryPercentage; batteryColor = 'yellow'; }
 
                     if (battery !== 100) {
-                        currentSystemBars.push({ icon: batteryIcon, name: 'Batería', text: batteryText, color: batteryColor });
+                        currentSystemBars.push({ icon: 'batteryfault', name: 'Batería', text: batteryPercentage, color: 'yellow' });
                     }
 
-                    const powerIcon = vm.barStatus.powerSupply ? 'powersupplynormal' : 'powersupplyfault';
-                    const powerText = vm.barStatus.powerSupply ? 'Normal' : 'Falla';
-                    const powerColor = vm.barStatus.powerSupply ? 'green' : 'yellow';
                     if (!vm.barStatus.powerSupply) {
-                        currentSystemBars.push({ icon: powerIcon, name: 'Alimentación', text: powerText, color: powerColor });
+                        currentSystemBars.push({ icon: 'powersupplyfault', name: 'Alimentación', text: 'Falla', color: 'yellow' });
                     }
 
-                    const networkIcon = vm.barStatus.network ? 'networknormal' : 'networkfault';
-                    const networkText = vm.barStatus.network ? 'Normal' : 'Falla';
-                    const networkColor = vm.barStatus.network ? 'green' : 'yellow';
                     if (!vm.barStatus.network) {
-                        currentSystemBars.push({ icon: networkIcon, name: 'Red', text: networkText, color: networkColor });
+                        currentSystemBars.push({ icon: 'networkfault', name: 'Red', text: 'Falla', color: 'yellow' });
                     }
 
                     previousBarStatus = angular.copy(vm.barStatus);
