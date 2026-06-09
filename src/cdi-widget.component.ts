@@ -77,6 +77,7 @@ angular.module('cdiService')
                 let previousInputsData = {} as any;
 
                 vm.isConfigured = false;
+                vm.isModular = false;
 
                 // Buttons state
                 vm.buttons = {
@@ -246,6 +247,8 @@ angular.module('cdiService')
                 // ==================== RENDERING LOGIC ====================
 
                 function updateBarStatus(barStatus: any) {
+                    vm.isModular = barStatus.hasOwnProperty('MODULO_I1') || barStatus.hasOwnProperty('MODULO_I2') || barStatus.hasOwnProperty('MODULO_O1') || barStatus.hasOwnProperty('MODULO_O2');
+
                     vm.barStatus = {
                         alarm: barStatus['ALARMA'] || false,
                         fault: barStatus['FALLA'] || false,
@@ -255,7 +258,11 @@ angular.module('cdiService')
                         extinction: barStatus['EXTINCION'] || false,
                         battery: barStatus['BATERIA'] || 0,
                         powerSupply: barStatus['ALIMENTACION'] || false,
-                        network: barStatus['RED'] || false
+                        network: barStatus['RED'] || false,
+                        mod_i1: barStatus['MODULO_I1'] || false,
+                        mod_i2: barStatus['MODULO_I2'] || false,
+                        mod_o1: barStatus['MODULO_O1'] || false,
+                        mod_o2: barStatus['MODULO_O2'] || false
                     };
                     updateStatusBarIcons();
                 }
@@ -270,7 +277,11 @@ angular.module('cdiService')
                         previousBarStatus.extinction === vm.barStatus.extinction &&
                         previousBarStatus.battery === vm.barStatus.battery &&
                         previousBarStatus.powerSupply === vm.barStatus.powerSupply &&
-                        previousBarStatus.network === vm.barStatus.network) {
+                        previousBarStatus.network === vm.barStatus.network &&
+                        previousBarStatus.mod_i1 === vm.barStatus.mod_i1 &&
+                        previousBarStatus.mod_i2 === vm.barStatus.mod_i2 &&
+                        previousBarStatus.mod_o1 === vm.barStatus.mod_o1 &&
+                        previousBarStatus.mod_o2 === vm.barStatus.mod_o2) {
                         return;
                     }
 
@@ -297,6 +308,13 @@ angular.module('cdiService')
 
                     if (!vm.barStatus.network) {
                         currentSystemBars.push({ icon: 'networkfault', name: 'Red', text: 'Falla', color: 'yellow' });
+                    }
+
+                    if (vm.isModular) {
+                        if (vm.barStatus.mod_i1 === false) currentSystemBars.push({ icon: 'disconnect', name: 'M_I1', text: 'Desconexión', color: 'yellow' });
+                        if (vm.barStatus.mod_i2 === false) currentSystemBars.push({ icon: 'disconnect', name: 'M_I2', text: 'Desconexión', color: 'yellow' });
+                        if (vm.barStatus.mod_o1 === false) currentSystemBars.push({ icon: 'disconnect', name: 'M_O1', text: 'Desconexión', color: 'yellow' });
+                        if (vm.barStatus.mod_o2 === false) currentSystemBars.push({ icon: 'disconnect', name: 'M_O2', text: 'Desconexión', color: 'yellow' });
                     }
 
                     previousBarStatus = angular.copy(vm.barStatus);
@@ -331,10 +349,17 @@ angular.module('cdiService')
                     // Add inputs
                     angular.forEach(currentInputs, function (input) {
                         if (vm.shouldShowBar(input)) {
+                            let inputTitle = vm.getBarName('input') + ' ' + input.number;
+                            if (vm.isModular) {
+                                let modNum = Math.ceil(input.number / 7);
+                                let modName = 'M_I' + modNum;
+                                let modInNum = ((input.number - 1) % 7) + 1;
+                                inputTitle = modName + ' ' + vm.getBarName('input') + ' ' + modInNum;
+                            }
                             tempBars.push({
                                 icon: vm.getBarIcon('input', input.status),
                                 color: vm.getBarColor('input', input.status),
-                                title: vm.getBarName('input') + ' ' + input.number + ' ' + vm.getStatusText(input.status),
+                                title: inputTitle + ' ' + vm.getStatusText(input.status),
                                 text: input.alias
                             });
                         }
