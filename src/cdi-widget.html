@@ -479,6 +479,44 @@
         }
     }
 
+    /* TOAST NOTIFICATION */
+    .toast-cdi {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: rgba(30, 30, 30, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        opacity: 0;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+        z-index: 9999;
+        pointer-events: none;
+    }
+    .toast-cdi.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+    .toast-cdi-title {
+        font-weight: 600;
+        font-size: 14px;
+        color: #fff;
+        margin: 0;
+    }
+    .toast-cdi-content {
+        font-size: 12px;
+        color: #ccc;
+        margin: 0;
+        text-align: center;
+    }
+
     /* END LOADING SCREEN */
 </style>
 <div class="cdi-widget-container">
@@ -727,36 +765,15 @@
         </div>
     </main>
 
-    <!-- Alert Modal -->
-    <div class="modal-cdi" ng-class="{show: vm.alert.show}">
-        <div class="modal-cdi-content alert">
-            <div>
-                <div>
-                    <h3 class="modal-cdi-header">{{vm.alert.title}}</h3>
-                </div>
-                <div>
-                    <p class="etiquetap">{{vm.alert.content}}</p>
-                </div>
-            </div>
-            <div class="modal-cdi-row">
-                <button class="modal-cdi-button" ng-click="vm.closeAlert()" type="button">
-                    OK
-                </button>
-            </div>
-        </div>
+    <!-- Toast Notification -->
+    <div class="toast-cdi" ng-class="{show: vm.alert.show}">
+        <h3 class="toast-cdi-title" ng-if="vm.alert.title">{{vm.alert.title}}</h3>
+        <p class="toast-cdi-content" ng-if="vm.alert.content">{{vm.alert.content}}</p>
     </div>
 
-    <!-- Loader Modal -->
-    <div class="modal-cdi" ng-class="{show: vm.showLoader}">
-        <div class="modal-cdi-content loader-modal">
-            <div>
-                <h3 class="modal-cdi-header">{{vm.loaderText}}</h3>
-            </div>
-            <div style="display: flex; justify-content: center;">
-                <div style="width: 48px;">
-                    <div class="spinner-loader big"></div>
-                </div>
-            </div>
-        </div>
+    <!-- Loader Toast -->
+    <div class="toast-cdi" ng-class="{show: vm.showLoader}" style="flex-direction: row; gap: 12px;">
+        <div class="spinner-loader" style="width: 24px; height: 24px; border-width: 3px; border-top-color: #4fc3f7; border-color: rgba(255,255,255,0.2) rgba(255,255,255,0.2) rgba(255,255,255,0.2) #4fc3f7; border-radius: 50%; animation: loadingSpin 0.9s linear infinite;"></div>
+        <h3 class="toast-cdi-title">{{vm.loaderText}}</h3>
     </div>
 </div>

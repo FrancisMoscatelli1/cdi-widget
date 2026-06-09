@@ -120,11 +120,11 @@ angular.module('cdiService')
                                 vm.buttons.test = true;
                                 console.log('User authenticated successfully');
                             } else {
-                                showAlert('Error', 'Authentication failed. Invalid credentials.');
+                                showAlert('Error', 'Error de autenticación. Credenciales inválidas.');
                             }
                         })
                         .catch(function (error: any) {
-                            showAlert('Error', 'Authentication error: ' + error.message);
+                            showAlert('Error', 'Error de autenticación');
                         });
                 }
 
@@ -499,10 +499,20 @@ angular.module('cdiService')
                     vm.alert.show = true;
                     vm.alert.title = title;
                     vm.alert.content = content;
+
+                    if (vm.alertTimeout) {
+                        $timeout.cancel(vm.alertTimeout);
+                    }
+                    vm.alertTimeout = $timeout(function () {
+                        vm.alert.show = false;
+                    }, 3500);
                 }
 
                 vm.closeAlert = function () {
                     vm.alert.show = false;
+                    if (vm.alertTimeout) {
+                        $timeout.cancel(vm.alertTimeout);
+                    }
                 };
 
 
