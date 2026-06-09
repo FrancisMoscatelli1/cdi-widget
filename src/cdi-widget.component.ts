@@ -49,7 +49,7 @@ angular.module('cdiService')
                 };
 
                 // Widget state
-                vm.installationName = '';
+                vm.installationName = 'CDI';
                 vm.bars = [];
                 let currentLines = [];
                 let currentInputs = [];
@@ -199,9 +199,18 @@ angular.module('cdiService')
                                 vm.offline = true;
                             }
                         } else {
+                            var wasOffline = vm.offline;
                             consecutiveErrors = 0;
                             vm.offline = false;
                             vm.loading = false;
+
+                            // Reintentar si se recupero la conexion o falta cargar datos
+                            if (wasOffline || !vm.installationName) {
+                                loadInitialData();
+                            }
+                            if (wasOffline || !vm.isAuthenticated) {
+                                authenticate();
+                            }
                         }
                     });
                 }
