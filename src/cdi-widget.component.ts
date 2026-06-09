@@ -36,6 +36,10 @@ angular.module('cdiService')
                 vm.isAuthenticated = false;
                 vm.showLoader = false;
                 vm.loaderText = '';
+                vm.offline = false;
+                vm.loading = true;
+                let consecutiveErrors = 0;
+                const OFFLINE_THRESHOLD = 2;
 
                 // Alert modal state
                 vm.alert = {
@@ -60,9 +64,9 @@ angular.module('cdiService')
                     test: false,
                     extinction: false,
                     // (right container)
-                    battery: 0,
-                    powerSupply: false,
-                    network: false
+                    battery: 100,
+                    powerSupply: true,
+                    network: true
                 };
 
                 // Previous barStatus to detect changes
@@ -139,15 +143,17 @@ angular.module('cdiService')
                 }
 
                 function loadStatusData() {
-                    CdiWidgetService.getBarStatus(vm.apiDomain)
+                    var barPromise = CdiWidgetService.getBarStatus(vm.apiDomain)
                         .then(function (data: any) {
                             updateBarStatus(data.barstatus);
+                            return true;
                         })
                         .catch(function (error: any) {
                             console.error('Error loading bar data:', error);
+                            return false;
                         });
 
-                    CdiWidgetService.getLinesStatus(vm.apiDomain)
+                    var linesPromise = CdiWidgetService.getLinesStatus(vm.apiDomain)
                         .then(function (data: any) {
 
                             // DATOS DEMOSTRACION
@@ -167,7 +173,7 @@ angular.module('cdiService')
                                 .filter((input: any) => input.status !== 0);
 
                             if (!hasArrayChanged(previousLinesData, lines) && !hasArrayChanged(previousInputsData, inputs)) {
-                                return;
+                                return true;
                             }
 
                             currentLines = orderLines(lines);
@@ -176,10 +182,28 @@ angular.module('cdiService')
 
                             previousLinesData = angular.copy(lines);
                             previousInputsData = angular.copy(inputs);
+                            return true;
                         })
                         .catch(function (error: any) {
                             console.error('Error loading lines data:', error);
+                            return false;
                         });
+
+                    // Track consecutive errors across both calls
+                    (window as any).Promise.all([barPromise, linesPromise]).then(function (results: boolean[]) {
+                        var anyError = results.some(function (r) { return r === false; });
+                        if (anyError) {
+                            consecutiveErrors++;
+                            if (consecutiveErrors >= OFFLINE_THRESHOLD) {
+                                vm.loading = false;
+                                vm.offline = true;
+                            }
+                        } else {
+                            consecutiveErrors = 0;
+                            vm.offline = false;
+                            vm.loading = false;
+                        }
+                    });
                 }
 
                 function startAutoRefresh() {
