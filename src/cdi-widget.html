@@ -479,8 +479,35 @@
         }
     }
 
-    /* TOAST NOTIFICATION */
-    .toast-cdi {
+    /* LOADER TOAST (TOP) */
+    .toast-loader-cdi {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-20px);
+        background: rgba(30, 30, 30, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        opacity: 0;
+        z-index: 9999;
+        pointer-events: none;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    }
+    .toast-loader-cdi.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* ALERT TOAST (BOTTOM) */
+    .toast-alert-cdi {
         position: absolute;
         bottom: 20px;
         left: 50%;
@@ -490,26 +517,32 @@
         color: #fff;
         padding: 12px 20px;
         border-radius: 8px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 4px;
         opacity: 0;
-        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
         z-index: 9999;
         pointer-events: none;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+        width: max-content;
+        max-width: 90%;
     }
-    .toast-cdi.show {
+    .toast-alert-cdi.show {
         transform: translateX(-50%) translateY(0);
         opacity: 1;
+        pointer-events: auto;
     }
+
     .toast-cdi-title {
         font-weight: 600;
         font-size: 14px;
         color: #fff;
         margin: 0;
+        white-space: nowrap;
     }
+
     .toast-cdi-content {
         font-size: 12px;
         color: #ccc;
@@ -765,15 +798,17 @@
         </div>
     </main>
 
-    <!-- Toast Notification -->
-    <div class="toast-cdi" ng-class="{show: vm.alert.show}">
-        <h3 class="toast-cdi-title" ng-if="vm.alert.title">{{vm.alert.title}}</h3>
-        <p class="toast-cdi-content" ng-if="vm.alert.content">{{vm.alert.content}}</p>
+    <!-- Loader Toast (Top) -->
+    <div class="toast-loader-cdi" ng-class="{show: vm.showLoader}">
+        <div class="spinner-loader"
+            style="width: 24px; height: 24px; border-width: 3px; border-top-color: #4fc3f7; border-color: rgba(255,255,255,0.2) rgba(255,255,255,0.2) rgba(255,255,255,0.2) #4fc3f7; border-radius: 50%; animation: loadingSpin 0.9s linear infinite;">
+        </div>
+        <h3 class="toast-cdi-title">{{vm.loaderText}}</h3>
     </div>
 
-    <!-- Loader Toast -->
-    <div class="toast-cdi" ng-class="{show: vm.showLoader}" style="flex-direction: row; gap: 12px;">
-        <div class="spinner-loader" style="width: 24px; height: 24px; border-width: 3px; border-top-color: #4fc3f7; border-color: rgba(255,255,255,0.2) rgba(255,255,255,0.2) rgba(255,255,255,0.2) #4fc3f7; border-radius: 50%; animation: loadingSpin 0.9s linear infinite;"></div>
-        <h3 class="toast-cdi-title">{{vm.loaderText}}</h3>
+    <!-- Alert Toast (Bottom) -->
+    <div class="toast-alert-cdi" ng-class="{show: vm.alert.show}">
+        <h3 class="toast-cdi-title" ng-if="vm.alert.title">{{vm.alert.title}}</h3>
+        <p class="toast-cdi-content" ng-if="vm.alert.content">{{vm.alert.content}}</p>
     </div>
 </div>
