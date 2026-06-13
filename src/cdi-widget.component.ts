@@ -13,7 +13,8 @@ angular.module('cdiService')
         },
         controllerAs: 'vm',
         controller: ['$scope', '$interval', '$timeout', '$sce', 'CdiWidgetService', 'CDI_CONFIG',
-            function ($scope, $interval, $timeout, $sce, CdiWidgetService, CDI_CONFIG) {
+            function ($scope: any, $interval: any, $timeout: any, $sce: any, CdiWidgetService: any, CDI_CONFIG: any) {
+
                 // ==================== INITIALIZATION ====================
 
                 $scope.$on('$destroy', function () {
@@ -22,6 +23,7 @@ angular.module('cdiService')
                         $interval.cancel(vm.refreshInterval);
                     }
                 });
+
 
 
 
@@ -51,9 +53,9 @@ angular.module('cdiService')
                 // Widget state
                 vm.installationName = 'CDI';
                 vm.bars = [];
-                let currentLines = [];
-                let currentInputs = [];
-                let currentSystemBars = [];
+                let currentLines: any[] = [];
+                let currentInputs: any[] = [];
+                let currentSystemBars: any[] = [];
 
                 vm.barStatus = {
                     // (left container)
@@ -110,8 +112,8 @@ angular.module('cdiService')
                 }
 
                 /**
-                 * Authenticate user with the API
-                 */
+                                 * Authenticate user with the API
+                                 */
                 function authenticate() {
                     CdiWidgetService.authenticateUser(vm.apiDomain, vm.userId, vm.userCode)
                         .then(function (result: any) {
@@ -322,7 +324,7 @@ angular.module('cdiService')
                 }
 
                 function updateBars() {
-                    const tempBars = [];
+                    const tempBars: any[] = [];
 
                     // Add system bars
                     angular.forEach(currentSystemBars, function (bar) {
@@ -364,7 +366,6 @@ angular.module('cdiService')
                             });
                         }
                     });
-
                     // Priority order: Alarm (red), Pre-alarm (orange), Fault (yellow), Normal (green)
                     const priority = {
                         'red': 1,
@@ -382,6 +383,7 @@ angular.module('cdiService')
 
                     vm.bars = tempBars;
                 }
+
 
                 vm.getSystemColor = function () {
                     if (!vm.bars || vm.bars.length === 0) return 'green';
@@ -402,6 +404,13 @@ angular.module('cdiService')
                             case 6: return 'yellow';
                             case 7: return 'yellow';
                             case 8: return 'yellow';
+                            case 19: return 'red';
+                            case 21: return 'red';
+                            case 22: return 'red';
+                            case 23: return 'red';
+                            case 24: return 'red';
+                            case 25: return 'red';
+                            case 26: return 'red';
                             default: return 'green';
                         }
                     } else {
@@ -428,6 +437,13 @@ angular.module('cdiService')
                             case 6: return 'fault';
                             case 7: return 'fault';
                             case 8: return 'disconnect';
+                            case 19: return 'bell';
+                            case 21: return 'bell';
+                            case 22: return 'bell';
+                            case 23: return 'bell';
+                            case 24: return 'bell';
+                            case 25: return 'bell';
+                            case 26: return 'bell';
                             default: return 'check';
                         }
                     } else {
@@ -471,9 +487,9 @@ angular.module('cdiService')
                     });
                 }
 
-                function orderInputs(inputs) {
+                function orderInputs(inputs: any) {
                     const customOrder = { 12: 0, 9: 1, 1: 2, 4: 3, 5: 4, 0: 5 };
-                    return angular.copy(inputs).sort(function (a, b) {
+                    return angular.copy(inputs).sort(function (a: any, b: any) {
                         return (customOrder[a.status] ?? 99) - (customOrder[b.status] ?? 99);
                     });
                 }
@@ -555,12 +571,11 @@ angular.module('cdiService')
 
 
 
-
                 vm.$onInit = function () {
 
                     updateStatusBarIcons();
                     initializeConfig();
                     console.log('CDI Widget initialized');
-                };
+                }
             }]
     });
