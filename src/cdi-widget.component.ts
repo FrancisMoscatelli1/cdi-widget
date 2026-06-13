@@ -88,6 +88,12 @@ angular.module('cdiService')
                     test: false
                 };
 
+                vm.buttonsDisabledByCmd = {
+                    acknowledge: false,
+                    reset: false,
+                    test: false
+                };
+
                 // Language
                 vm.language = vm.language || CDI_CONFIG.DEFAULT_LANGUAGE;
 
@@ -500,8 +506,15 @@ angular.module('cdiService')
 
                 // ==================== BUTTON LOGIC ====================
 
+                vm.buttonsDisabledByCmd = { acknowledge: false, reset: false, test: false };
+
                 vm.acknowledge = function () {
-                    if (!vm.buttons.acknowledge) return;
+                    if (!vm.buttons.acknowledge || vm.buttonsDisabledByCmd.acknowledge) return;
+                    vm.buttonsDisabledByCmd.acknowledge = true;
+                    $timeout(function () {
+                        vm.buttonsDisabledByCmd.acknowledge = false;
+                    }, 2000);
+
                     vm.showLoader = true;
                     vm.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[vm.language];
                     CdiWidgetService.sendAcknowledge(vm.apiDomain, vm.userId)
@@ -516,7 +529,12 @@ angular.module('cdiService')
                 };
 
                 vm.reset = function () {
-                    if (!vm.buttons.reset) return;
+                    if (!vm.buttons.reset || vm.buttonsDisabledByCmd.reset) return;
+                    vm.buttonsDisabledByCmd.reset = true;
+                    $timeout(function () {
+                        vm.buttonsDisabledByCmd.reset = false;
+                    }, 2000);
+
                     vm.showLoader = true;
                     vm.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[vm.language];
                     CdiWidgetService.sendReset(vm.apiDomain, vm.userId)
@@ -531,7 +549,12 @@ angular.module('cdiService')
                 };
 
                 vm.test = function () {
-                    if (!vm.buttons.test) return;
+                    if (!vm.buttons.test || vm.buttonsDisabledByCmd.test) return;
+                    vm.buttonsDisabledByCmd.test = true;
+                    $timeout(function () {
+                        vm.buttonsDisabledByCmd.test = false;
+                    }, 2000);
+
                     vm.showLoader = true;
                     vm.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[vm.language];
                     CdiWidgetService.sendTest(vm.apiDomain, vm.userId)
