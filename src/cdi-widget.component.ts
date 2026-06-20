@@ -292,6 +292,7 @@ angular.module('cdiService')
                         test: barStatus['TEST'] || false,
                         extinction: barStatus['EXTINCION'] || false,
                         battery: barStatus['BATERIA'] || 0,
+                        batteryFault: barStatus['FLAGFBAT'] || false,
                         powerSupply: barStatus['ALIMENTACION'] || false,
                         network: barStatus['RED'] || false,
                         mod_i1: barStatus['MODULO_I1'] || false,
@@ -311,6 +312,7 @@ angular.module('cdiService')
                         previousBarStatus.test === vm.barStatus.test &&
                         previousBarStatus.extinction === vm.barStatus.extinction &&
                         previousBarStatus.battery === vm.barStatus.battery &&
+                        previousBarStatus.batteryFault === vm.barStatus.batteryFault &&
                         previousBarStatus.powerSupply === vm.barStatus.powerSupply &&
                         previousBarStatus.network === vm.barStatus.network &&
                         previousBarStatus.mod_i1 === vm.barStatus.mod_i1 &&
@@ -333,8 +335,9 @@ angular.module('cdiService')
                     const batteryPercentage = battery.toString() + '%';
 
 
-                    if (battery !== 100) {
-                        currentSystemBars.push({ icon: 'batteryfault', name: 'Batería', text: batteryPercentage, color: 'yellow' });
+                    if (vm.barStatus.batteryFault) {
+                        const batteryText = 'Falla ' + batteryPercentage ;
+                        currentSystemBars.push({ icon: 'batteryfault', name: 'Batería', text: batteryText, color: 'yellow' });
                     }
 
                     if (!vm.barStatus.powerSupply) {
