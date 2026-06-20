@@ -191,12 +191,11 @@ angular.module('cdiService')
                             //     { number: 4, status: 9, enable: 1, alias: 'Sensor Inundación' },
                             //     { number: 5, status: 12, enable: 1, alias: 'Pulsador Salida' },
                             //     { number: 6, status: 2, enable: 1, alias: 'Sensor Puerta' }
-
                             // ];
-                            const lines = ( [])
+                            const lines = (data['LINEAS'] || [])
                                 .filter((line: any) => line.status !== 0);
 
-                            const inputs = ([])
+                            const inputs = (data['ENTRADAS'] || [])
                                 .filter((input: any) => input.status !== 0);
 
                             if (!hasArrayChanged(previousLinesData, lines) && !hasArrayChanged(previousInputsData, inputs)) {
