@@ -186,7 +186,12 @@ angular.module('cdiService')
                             // ];
                             // const inputs = [
                             //     { number: 1, status: 1, enable: 1, alias: 'Pulsador Emergencia' },
-                            //     { number: 2, status: 5, enable: 1, alias: 'Sensor Humo' }
+                            //     { number: 2, status: 5, enable: 1, alias: 'Sensor Humo' },
+                            //     { number: 3, status: 2, enable: 1, alias: 'Sensor Temperatura' },
+                            //     { number: 4, status: 9, enable: 1, alias: 'Sensor Inundación' },
+                            //     { number: 5, status: 12, enable: 1, alias: 'Pulsador Salida' },
+                            //     { number: 6, status: 2, enable: 1, alias: 'Sensor Puerta' }
+
                             // ];
                             const lines = ( [])
                                 .filter((line: any) => line.status !== 0);
@@ -401,8 +406,30 @@ angular.module('cdiService')
                     });
 
                     vm.bars = tempBars;
+                    $timeout(updateScrollState, 50);
                 }
 
+
+                vm.scrollAtTop = true;
+                vm.scrollAtBottom = false;
+
+                vm.scrollBars = function (direction: number) {
+                    var el = document.getElementById('bar-scroll-container');
+                    if (el) el.scrollBy({ top: direction * 80, behavior: 'smooth' });
+                };
+
+                function updateScrollState() {
+                    var el = document.getElementById('bar-scroll-container');
+                    if (!el) return;
+                    vm.scrollAtTop = el.scrollTop <= 0;
+                    vm.scrollAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+                    $scope.$applyAsync();
+                }
+
+                $timeout(function () {
+                    var el = document.getElementById('bar-scroll-container');
+                    if (el) el.addEventListener('scroll', updateScrollState);
+                }, 500);
 
                 vm.getSystemColor = function () {
                     if (!vm.bars || vm.bars.length === 0) return 'green';
