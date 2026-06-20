@@ -139,17 +139,30 @@ angular.module('cdiService')
 
                 // ==================== DATA FETCHING ====================
 
+                vm.installationMac = null;
+
                 function loadInitialData() {
                     CdiWidgetService.getGeneralConfig(vm.apiDomain)
                         .then(function (config: any) {
-                            if (config && config.cfgGeneral && config.cfgGeneral['NAME']) {
-                                vm.installationName = config.cfgGeneral['NAME'];
+                            if (config && config.cfgGeneral) {
+                                if (config.cfgGeneral['NAME']) {
+                                    vm.installationName = config.cfgGeneral['NAME'];
+                                }
+                                if (config['MAC']) {
+                                    console.log('Installation MAC:', config['MAC']);
+                                    vm.installationMac = config['MAC'];
+                                }
                             }
                         })
                         .catch(function (error: any) {
                             console.error('Error loading general config:', error);
                         });
                 }
+
+                vm.getCenterUrl = function () {
+                    var mac = vm.installationMac;
+                    return 'https://cdi.efaisa.com.ar/' + mac;
+                };
 
                 function loadStatusData() {
                     var barPromise = CdiWidgetService.getBarStatus(vm.apiDomain)
@@ -175,10 +188,10 @@ angular.module('cdiService')
                             //     { number: 1, status: 1, enable: 1, alias: 'Pulsador Emergencia' },
                             //     { number: 2, status: 5, enable: 1, alias: 'Sensor Humo' }
                             // ];
-                            const lines = (data['LINEAS'] || [])
+                            const lines = ( [])
                                 .filter((line: any) => line.status !== 0);
 
-                            const inputs = (data['ENTRADAS'] || [])
+                            const inputs = ([])
                                 .filter((input: any) => input.status !== 0);
 
                             if (!hasArrayChanged(previousLinesData, lines) && !hasArrayChanged(previousInputsData, inputs)) {

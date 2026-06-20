@@ -66,6 +66,12 @@
         padding-left: 4px;
         color: white;
         text-align: center;
+        animation: titlePulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes titlePulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.06); }
     }
 
     .button-container {
@@ -123,6 +129,38 @@
         font-size: 20px;
         padding: 4px;
         margin: 0;
+    }
+
+    .center-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 12px;
+        padding: 6px 14px;
+        background: rgba(255,255,255,0.25);
+        border: 1px solid rgba(255,255,255,0.5);
+        border-radius: 20px;
+        color: white;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        letter-spacing: 0.03em;
+        transition: background 0.2s;
+    }
+
+    .center-link:hover {
+        background: rgba(255,255,255,0.4);
+    }
+
+    .center-link svg {
+        width: 14px;
+        height: 14px;
+        stroke: white;
+        fill: none;
+        stroke-width: 2.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        flex-shrink: 0;
     }
 
     /* NAVBAR */
@@ -716,6 +754,11 @@
                 <circle cx="12" cy="20" r="1" fill="#ff6b6b" stroke="none"></circle>
             </g>
         </symbol>
+        <symbol id="icon-externallink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+        </symbol>
     </svg>
 
     <!-- Configuration Error Message -->
@@ -749,14 +792,18 @@
 
         <!-- Bars container -->
         <div class="bar-container" ng-class="{message: vm.bars.length === 0 }">
-            <!-- Display Title only when not loading and no bars -->
-            <ng-show ng-if="vm.bars.length === 0">
+            <!-- Display Title only when not loading and no bars (estado normal) -->
+            <ng-show ng-if="vm.bars.length === 0" style="display: flex;flex-direction: column;align-items: center;">
                 <h2 class="main-header-title" style="margin-bottom: 12px;">
                     {{vm.installationName}}
                 </h2>
                 <h3 class="main-header-title" style="color: #badbcc; font-size: 20px;">
                     {{vm.t('main.lineAndInputNormalization')}}
                 </h3>
+                <a ng-href="{{vm.getCenterUrl()}}" target="_blank" class="center-link">
+                    <span ng-bind-html="vm.getIcon('externallink')"></span>
+                    Acceder a central
+                </a>
             </ng-show>
 
             <!-- Unified Bars -->
