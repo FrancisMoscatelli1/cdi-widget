@@ -43,6 +43,14 @@ angular.module('cdiService')
                 let consecutiveErrors = 0;
                 const OFFLINE_THRESHOLD = 2;
 
+                vm.trafficDot = '';
+                let trafficDotTimer: any = null;
+                function signalTraffic(type: 'get' | 'post') {
+                    if (trafficDotTimer) { $timeout.cancel(trafficDotTimer); }
+                    vm.trafficDot = type;
+                    trafficDotTimer = $timeout(function () { vm.trafficDot = ''; }, 450);
+                }
+
                 // Alert modal state
                 vm.alert = {
                     show: false,
@@ -123,6 +131,7 @@ angular.module('cdiService')
                 function authenticate() {
                     CdiWidgetService.authenticateUser(vm.apiDomain, vm.userId, vm.userCode)
                         .then(function (result: any) {
+                            signalTraffic('post');
                             if (result.success) {
                                 vm.isAuthenticated = true;
                                 vm.buttons.reset = true;
@@ -167,6 +176,7 @@ angular.module('cdiService')
                 function loadStatusData() {
                     var barPromise = CdiWidgetService.getBarStatus(vm.apiDomain)
                         .then(function (data: any) {
+                            signalTraffic('get');
                             updateBarStatus(data.barstatus);
                             return true;
                         })
@@ -177,7 +187,7 @@ angular.module('cdiService')
 
                     var linesPromise = CdiWidgetService.getLinesStatus(vm.apiDomain)
                         .then(function (data: any) {
-
+                            signalTraffic('get');
                             // DATOS DEMOSTRACION
                             // const lines = [
                             //     { number: 1, status: 2, enable: 1, alias: 'Pasillo Norte' },
@@ -558,6 +568,7 @@ angular.module('cdiService')
                     vm.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[vm.language];
                     CdiWidgetService.sendAcknowledge(vm.apiDomain, vm.userId)
                         .then(function (response: any) {
+                            signalTraffic('post');
                             vm.showLoader = false;
                             showAlert(CDI_CONFIG.DICTIONARY.modals.alert.acknowledge.success.header[vm.language], CDI_CONFIG.DICTIONARY.modals.alert.acknowledge.success.content[vm.language]);
                         })
@@ -578,6 +589,7 @@ angular.module('cdiService')
                     vm.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[vm.language];
                     CdiWidgetService.sendReset(vm.apiDomain, vm.userId)
                         .then(function (response: any) {
+                            signalTraffic('post');
                             vm.showLoader = false;
                             showAlert(CDI_CONFIG.DICTIONARY.modals.alert.reset.success.header[vm.language], CDI_CONFIG.DICTIONARY.modals.alert.reset.success.content[vm.language]);
                         })
@@ -598,6 +610,7 @@ angular.module('cdiService')
                     vm.loaderText = CDI_CONFIG.DICTIONARY.modals.loader.header[vm.language];
                     CdiWidgetService.sendTest(vm.apiDomain, vm.userId)
                         .then(function (response: any) {
+                            signalTraffic('post');
                             vm.showLoader = false;
                             showAlert(CDI_CONFIG.DICTIONARY.modals.alert.test.success.header[vm.language], CDI_CONFIG.DICTIONARY.modals.alert.test.success.content[vm.language]);
                         })
