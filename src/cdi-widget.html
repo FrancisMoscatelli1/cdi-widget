@@ -75,6 +75,48 @@
         color: white;
         margin-bottom: 2px;
     }
+    .event-count-badge {
+        background: rgba(0, 0, 0, 0.08);
+        border-radius: 12px;
+        padding: 2px 6px;
+        font-size: 12px;
+        font-weight: bold;
+        color: #555;
+        text-align: center;
+    }
+    .toast-confirm-cdi {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: rgba(20, 80, 60, 0.97);
+        border: 1px solid rgba(46, 204, 113, 0.4);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        opacity: 0;
+        z-index: 9999;
+        pointer-events: none;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+        width: max-content;
+        max-width: 90%;
+        cursor: pointer;
+    }
+    .toast-confirm-cdi.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .toast-confirm-cdi svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
 
     .scroll-buttons {
         position: absolute;
@@ -144,7 +186,8 @@
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        justify-content: space-evenly;
+        justify-content: center;
+        gap: 2px;
         background: whitesmoke;
         padding: 8px;
     }
@@ -870,9 +913,6 @@
         <!-- Bars container -->
         <div class="bar-container-wrapper" style="position: relative;">
             <div id="bar-scroll-container" class="bar-container" ng-class="{message: vm.bars.length === 0 }">
-                <div class="event-counter" ng-if="vm.bars.length > 0">
-                    <span>{{vm.bars.length}}</span>
-                </div>
                 <!-- Display Title only when not loading and no bars (estado normal) -->
                 <ng-show ng-if="vm.bars.length === 0" style="display: flex;flex-direction: column;align-items: center;">
                     <h2 class="main-header-title" ng-class="vm.trafficDot" style="margin-bottom: 12px;">
@@ -881,10 +921,6 @@
                     <h3 class="main-header-title" style="color: #badbcc; font-size: 20px;">
                         {{vm.t('main.lineAndInputNormalization')}}
                     </h3>
-                    <a ng-href="{{vm.getCenterUrl()}}" target="_blank" class="center-link">
-                        <span ng-bind-html="vm.getIcon('externallink')"></span>
-                        Acceder a central
-                    </a>
                 </ng-show>
 
                 <!-- Unified Bars -->
@@ -906,28 +942,34 @@
 
         <!-- Buttons container -->
         <div class="column button-container">
+            <!-- Event counter badge -->
+            <div class="event-count-badge">{{vm.bars.length}}</div>
+
+            <!-- <div class="buttons-separator"></div> -->
+
             <!-- Acknowledge Button -->
             <button class="barbutton" ng-click="vm.acknowledge()" ng-disabled="!vm.buttons.acknowledge || vm.buttonsDisabledByCmd.acknowledge" type="button">
                 <span ng-bind-html="vm.getIcon('check')"></span>
-                <!-- <span>{{vm.t('main.buttons.acknowledge')}}</span> -->
             </button>
 
-            <div class="buttons-separator"></div>
+            <!-- <div class="buttons-separator"></div> -->
 
             <!-- Reset Button -->
             <button class="barbutton" ng-click="vm.reset()" ng-disabled="!vm.buttons.reset || vm.buttonsDisabledByCmd.reset" type="button">
                 <span ng-bind-html="vm.getIcon('reset')"></span>
-                <!-- <span>{{vm.t('main.buttons.reset')}}</span> -->
             </button>
 
-            <div class="buttons-separator"></div>
+            <!-- <div class="buttons-separator"></div> -->
 
             <!-- Test Button -->
             <button class="barbutton" ng-click="vm.test()" ng-disabled="!vm.buttons.test || vm.buttonsDisabledByCmd.test" type="button">
                 <span ng-bind-html="vm.getIcon('test')"></span>
-                <!-- <span>{{vm.t('main.buttons.test')}}</span> -->
             </button>
 
+            <!-- Access Center Button -->
+            <button class="barbutton" ng-click="vm.openCenter()" type="button">
+                <span ng-bind-html="vm.getIcon('externallink')"></span>
+            </button>
         </div>
     </main>
 
@@ -943,5 +985,14 @@
     <div class="toast-alert-cdi" ng-class="{show: vm.alert.show}">
         <h3 class="toast-cdi-title" ng-if="vm.alert.title">{{vm.alert.title}}</h3>
         <p class="toast-cdi-content" ng-if="vm.alert.content">{{vm.alert.content}}</p>
+    </div>
+
+    <!-- Confirm Access to Center Toast -->
+    <div class="toast-confirm-cdi" ng-class="{show: vm.confirm.show}" ng-click="vm.confirmCenter()">
+        <span ng-bind-html="vm.getIcon('externallink')"></span>
+        <div>
+            <h3 class="toast-cdi-title">Acceder a central</h3>
+            <p class="toast-cdi-content">Toca para ingresar</p>
+        </div>
     </div>
 </div>

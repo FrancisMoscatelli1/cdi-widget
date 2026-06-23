@@ -174,6 +174,23 @@ angular.module('cdiService')
                     return 'https://cdi.efaisa.com.ar/' + mac;
                 };
 
+                vm.confirm = { show: false };
+                let confirmTimeout: any = null;
+
+                vm.openCenter = function () {
+                    if (confirmTimeout) { $timeout.cancel(confirmTimeout); }
+                    vm.confirm.show = true;
+                    confirmTimeout = $timeout(function () {
+                        vm.confirm.show = false;
+                    }, 4000);
+                };
+
+                vm.confirmCenter = function () {
+                    if (confirmTimeout) { $timeout.cancel(confirmTimeout); }
+                    vm.confirm.show = false;
+                    window.open(vm.getCenterUrl(), '_blank');
+                };
+
                 function loadStatusData() {
                     if (statusRequestPending) { return; }
                     statusRequestPending = true;
