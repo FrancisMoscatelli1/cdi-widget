@@ -146,7 +146,7 @@ angular.module('cdiService', [])
              * Fetch bar status
              */
             getBarStatus: function (apiDomain: string) {
-                return $http.get(apiDomain + '/api/barstatus')
+                return $http.get(apiDomain + '/api/barstatus', { timeout: 5000 })
                     .then(function (response: any) { return response.data; })
                     .catch(function (error: any) {
                         console.error('Bar status error:', error);
@@ -158,7 +158,7 @@ angular.module('cdiService', [])
              * Fetch lines and inputs
              */
             getLinesStatus: function (apiDomain: string) {
-                return $http.get(apiDomain + '/api/linesstatus')
+                return $http.get(apiDomain + '/api/linesstatus', { timeout: 5000 })
                     .then(function (response: any) { return response.data; })
                     .catch(function (error: any) {
                         console.error('Lines status error:', error);

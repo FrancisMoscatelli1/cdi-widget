@@ -42,6 +42,7 @@ angular.module('cdiService')
                 vm.loading = true;
                 let consecutiveErrors = 0;
                 const OFFLINE_THRESHOLD = 2;
+                let statusRequestPending = false;
 
                 vm.trafficDot = '';
                 let trafficDotTimer: any = null;
@@ -174,6 +175,9 @@ angular.module('cdiService')
                 };
 
                 function loadStatusData() {
+                    if (statusRequestPending) { return; }
+                    statusRequestPending = true;
+
                     var barPromise = CdiWidgetService.getBarStatus(vm.apiDomain)
                         .then(function (data: any) {
                             signalTraffic('get');
@@ -227,6 +231,7 @@ angular.module('cdiService')
 
                     // Track consecutive errors across both calls
                     (window as any).Promise.all([barPromise, linesPromise]).then(function (results: boolean[]) {
+                        statusRequestPending = false;
                         var anyError = results.some(function (r) { return r === false; });
                         if (anyError) {
                             consecutiveErrors++;
@@ -248,6 +253,8 @@ angular.module('cdiService')
                                 authenticate();
                             }
                         }
+                    }).catch(function () {
+                        statusRequestPending = false;
                     });
                 }
 
