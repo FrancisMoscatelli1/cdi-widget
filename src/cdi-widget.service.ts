@@ -23,6 +23,17 @@ angular.module('cdiService', [])
                 "Normale", "Allarme", "Allarme", "Pre-allarme", "Allarme tecnico", "Macanza", "Linea aperta", "Linea corta", "Escluso", "Pulsante di download manuale del PDM", "Accettazione", "Ripristina", "Aborto", "Sistema inizializzato", "Sirena del silenzio", "Batteria scarica", "Batteria carica", "Mancanza di alimentazione", "Alimentazione OK", "Rapina"
             ]
         },
+        EVENT_TYPE: {
+            es: ["Sistema", "Entrada", "Linea", "Inalambrico", "Robo"],
+            en: ["System", "IN", "Line", "Wireless", "Robbery"],
+            pt: ["Sistema", "IN", "Linha", "Wireless", "Roubo"],
+            it: ["Sistema", "IN", "Linea", "Wireless", "Rapina"]
+        },
+        EVENT_NUMBER_SPECIAL: {
+            253: { es: "Local", en: "Local", pt: "Local", it: "Locale" },
+            254: { es: "Remoto", en: "Remote", pt: "Remoto", it: "Remoto" },
+            15: "M7IN (1)", 16: "M7IN (2)", 17: "MR3 (1)", 18: "MR3 (2)"
+        },
         DICTIONARY: {
             common: {
                 reset: { es: "Reiniciar", en: "Reset", pt: "Reiniciar", it: "Ripristina" },
@@ -162,6 +173,15 @@ angular.module('cdiService', [])
                     .then(function (response: any) { return response.data; })
                     .catch(function (error: any) {
                         console.error('Lines status error:', error);
+                        return $q.reject(error);
+                    });
+            },
+
+            getLstEvents: function (apiDomain: string) {
+                return $http.get(apiDomain + '/api/config/lstevents')
+                    .then(function (response: any) { return response.data; })
+                    .catch(function (error: any) {
+                        console.error('lstevents error:', error);
                         return $q.reject(error);
                     });
             },

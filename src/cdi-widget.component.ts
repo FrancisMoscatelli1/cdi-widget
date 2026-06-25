@@ -62,6 +62,7 @@ angular.module('cdiService')
                 // Widget state
                 vm.installationName = 'CDI';
                 vm.bars = [];
+                vm.lstEvents = [];
                 let currentLines: any[] = [];
                 let currentInputs: any[] = [];
                 let currentSystemBars: any[] = [];
@@ -167,11 +168,36 @@ angular.module('cdiService')
                         .catch(function (error: any) {
                             console.error('Error loading general config:', error);
                         });
+
+                    CdiWidgetService.getLstEvents(vm.apiDomain)
+                        .then(function (data: any) {
+                            vm.lstEvents = data?.LASTEVENTS;
+                        })
+                        .catch(function () { vm.lstEvents = []; });
                 }
 
                 vm.getCenterUrl = function () {
                     var mac = vm.installationMac;
                     return 'https://cdi.efaisa.com.ar/' + mac;
+                };
+
+                vm.translateEvent = function (ev: any) {
+                    var lang = vm.language || 'es';
+
+                    var typeMap = CDI_CONFIG.EVENT_TYPE[lang] || CDI_CONFIG.EVENT_TYPE['es'];
+                    var type = (typeof ev.type === 'number' && typeMap[ev.type] != null)
+                        ? typeMap[ev.type] : ev.type;
+
+                    var numSpecial = CDI_CONFIG.EVENT_NUMBER_SPECIAL[ev.number];
+                    var number = numSpecial
+                        ? (typeof numSpecial === 'object' ? numSpecial[lang] : numSpecial)
+                        : ev.number;
+
+                    var statusArr = CDI_CONFIG.STATUS_LYE[lang] || CDI_CONFIG.STATUS_LYE['es'];
+                    var status = (typeof ev.status === 'number' && statusArr[ev.status] != null)
+                        ? statusArr[ev.status] : ev.status;
+
+                    return { date: ev.date, type: type, number: number, status: status };
                 };
 
                 vm.confirm = { show: false };
