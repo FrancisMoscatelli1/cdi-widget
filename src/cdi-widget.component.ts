@@ -181,6 +181,14 @@ angular.module('cdiService')
                     return 'https://cdi.efaisa.com.ar/' + mac;
                 };
 
+                function formatDate(str: any): string {
+                    if (!str) return '';
+                    var d = new Date(Number(str) * 1000);
+                    if (isNaN(d.getTime())) return '';
+                    function p2(n: number) { return n < 10 ? '0' + n : '' + n; }
+                    return p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
+                }
+
                 vm.translateEvent = function (ev: any) {
                     var lang = vm.language || 'es';
 
@@ -197,7 +205,7 @@ angular.module('cdiService')
                     var status = (typeof ev.status === 'number' && statusArr[ev.status] != null)
                         ? statusArr[ev.status] : ev.status;
 
-                    return { date: ev.date, type: type, number: number, status: status };
+                    return { date: formatDate(ev.date), type: type, number: number, status: status };
                 };
 
                 vm.confirm = { show: false };
@@ -291,6 +299,10 @@ angular.module('cdiService')
                             // Reintentar si se recupero la conexion o falta cargar datos
                             if (wasOffline || !vm.installationName) {
                                 loadInitialData();
+                            } else if (vm.bars.length === 0) {
+                                CdiWidgetService.getLstEvents(vm.apiDomain)
+                                    .then(function (data: any) { vm.lstEvents = data?.LASTEVENTS; })
+                                    .catch(function () {});
                             }
                             if (wasOffline || !vm.isAuthenticated) {
                                 authenticate();
