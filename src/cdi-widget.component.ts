@@ -93,7 +93,7 @@ angular.module('cdiService')
 
                 // Buttons state
                 vm.buttons = {
-                    acknowledge: true,
+                    acknowledge: false,
                     reset: false,
                     test: false
                 };
@@ -362,6 +362,8 @@ angular.module('cdiService')
                         mod_o1: barStatus['MODULO_O1'] || false,
                         mod_o2: barStatus['MODULO_O2'] || false
                     };
+
+                    vm.buttons.acknowledge = barStatus['BUZZER'];
                     updateStatusBarIcons();
                 }
 
