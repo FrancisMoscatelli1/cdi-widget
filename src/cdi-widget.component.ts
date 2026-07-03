@@ -176,6 +176,7 @@ angular.module('cdiService')
                     CdiWidgetService.getLstEvents(vm.apiDomain)
                         .then(function (data: any) {
                             vm.lstEvents = data?.LASTEVENTS;
+                            $timeout(updateEventsScrollState, 50);
                         })
                         .catch(function () { vm.lstEvents = []; });
                 }
@@ -305,7 +306,10 @@ angular.module('cdiService')
                                 loadInitialData();
                             } else if (vm.bars.length === 0) {
                                 CdiWidgetService.getLstEvents(vm.apiDomain)
-                                    .then(function (data: any) { vm.lstEvents = data?.LASTEVENTS; })
+                                    .then(function (data: any) {
+                                        vm.lstEvents = data?.LASTEVENTS;
+                                        $timeout(updateEventsScrollState, 50);
+                                    })
                                     .catch(function () {});
                             }
                             if (wasOffline || !vm.isAuthenticated) {
@@ -508,6 +512,27 @@ angular.module('cdiService')
                 $timeout(function () {
                     var el = document.getElementById('bar-scroll-container');
                     if (el) el.addEventListener('scroll', updateScrollState);
+                }, 500);
+
+                vm.eventsScrollAtTop = true;
+                vm.eventsScrollAtBottom = false;
+
+                vm.scrollEvents = function (direction: number) {
+                    var el = document.getElementById('lstevents-scroll-container');
+                    if (el) el.scrollBy({ top: direction * 80, behavior: 'smooth' });
+                };
+
+                function updateEventsScrollState() {
+                    var el = document.getElementById('lstevents-scroll-container');
+                    if (!el) return;
+                    vm.eventsScrollAtTop = el.scrollTop <= 0;
+                    vm.eventsScrollAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+                    $scope.$applyAsync();
+                }
+
+                $timeout(function () {
+                    var el = document.getElementById('lstevents-scroll-container');
+                    if (el) el.addEventListener('scroll', updateEventsScrollState);
                 }, 500);
 
                 vm.getSystemColor = function () {

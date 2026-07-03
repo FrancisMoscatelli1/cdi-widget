@@ -103,6 +103,12 @@
         min-height: 0;
         overflow: hidden;
     }
+    .lstevents-wrapper {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        display: flex;
+    }
     .lstevents-grid {
         flex: 1;
         overflow-y: auto;
@@ -1021,15 +1027,21 @@
 
             <!-- NORMALIZED STATE: grid + info -->
             <div class="normalized-layout" ng-if="vm.bars.length === 0">
-                <div class="lstevents-grid">
-                    <div class="lstevents-empty" ng-if="!vm.lstEvents || vm.lstEvents.length === 0">
-                        <span>Sin eventos registrados</span>
+                <div class="lstevents-wrapper">
+                    <div id="lstevents-scroll-container" class="lstevents-grid">
+                        <div class="lstevents-empty" ng-if="!vm.lstEvents || vm.lstEvents.length === 0">
+                            <span>Sin eventos registrados</span>
+                        </div>
+                        <div class="lstevents-item" ng-repeat="ev in vm.lstEvents track by $index" ng-init="r = vm.translateEvent(ev)">
+                            <span class="lstevents-date">{{r.date}}</span>
+                            <span class="lstevents-type-tag">{{r.type}}</span>
+                            <span class="lstevents-name">{{r.status}}</span>
+                            <span class="lstevents-num">#{{r.number}}</span>
+                        </div>
                     </div>
-                    <div class="lstevents-item" ng-repeat="ev in vm.lstEvents track by $index" ng-init="r = vm.translateEvent(ev)">
-                        <span class="lstevents-date">{{r.date}}</span>
-                        <span class="lstevents-type-tag">{{r.type}}</span>
-                        <span class="lstevents-name">{{r.status}}</span>
-                        <span class="lstevents-num">#{{r.number}}</span>
+                    <div class="scroll-buttons" ng-if="vm.lstEvents.length > 0">
+                        <button class="scroll-btn" ng-click="vm.scrollEvents(-1)" ng-if="!vm.eventsScrollAtTop" type="button">&#x25B2;</button>
+                        <button class="scroll-btn" ng-click="vm.scrollEvents(1)" ng-if="!vm.eventsScrollAtBottom" type="button">&#x25BC;</button>
                     </div>
                 </div>
                 <div class="normalized-info">
