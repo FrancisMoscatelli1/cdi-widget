@@ -78,7 +78,11 @@ angular.module('cdiService')
                     // (right container)
                     battery: 100,
                     powerSupply: true,
-                    network: true
+                    network: true,
+                    MR3_1: -1,
+                    MR3_2: -1,
+                    M7IN_1: -1,
+                    M7IN_2: -1
                 };
 
                 // Previous barStatus to detect changes
@@ -357,10 +361,10 @@ angular.module('cdiService')
                         batteryFault: barStatus['FLAGFBAT'] || false,
                         powerSupply: barStatus['ALIMENTACION'] || false,
                         network: barStatus['RED'] || false,
-                        mod_i1: barStatus['MODULO_I1'] || false,
-                        mod_i2: barStatus['MODULO_I2'] || false,
-                        mod_o1: barStatus['MODULO_O1'] || false,
-                        mod_o2: barStatus['MODULO_O2'] || false
+                        MR3_1: barStatus['MODULO_O1'] !== undefined ? barStatus['MODULO_O1'] : -1,
+                        MR3_2: barStatus['MODULO_O2'] !== undefined ? barStatus['MODULO_O2'] : -1,
+                        M7IN_1: barStatus['MODULO_I1'] !== undefined ? barStatus['MODULO_I1'] : -1,
+                        M7IN_2: barStatus['MODULO_I2'] !== undefined ? barStatus['MODULO_I2'] : -1
                     };
                     updateStatusBarIcons();
                 }
@@ -377,10 +381,10 @@ angular.module('cdiService')
                         previousBarStatus.batteryFault === vm.barStatus.batteryFault &&
                         previousBarStatus.powerSupply === vm.barStatus.powerSupply &&
                         previousBarStatus.network === vm.barStatus.network &&
-                        previousBarStatus.mod_i1 === vm.barStatus.mod_i1 &&
-                        previousBarStatus.mod_i2 === vm.barStatus.mod_i2 &&
-                        previousBarStatus.mod_o1 === vm.barStatus.mod_o1 &&
-                        previousBarStatus.mod_o2 === vm.barStatus.mod_o2) {
+                        previousBarStatus.MR3_1 === vm.barStatus.MR3_1 &&
+                        previousBarStatus.MR3_2 === vm.barStatus.MR3_2 &&
+                        previousBarStatus.M7IN_1 === vm.barStatus.M7IN_1 &&
+                        previousBarStatus.M7IN_2 === vm.barStatus.M7IN_2) {
                         return;
                     }
 
@@ -412,10 +416,10 @@ angular.module('cdiService')
                     }
 
                     if (vm.isModular) {
-                        if (vm.barStatus.mod_i1 === false) currentSystemBars.push({ icon: 'disconnect', name: 'M_I1', text: 'Desconexión', color: 'yellow' });
-                        if (vm.barStatus.mod_i2 === false) currentSystemBars.push({ icon: 'disconnect', name: 'M_I2', text: 'Desconexión', color: 'yellow' });
-                        if (vm.barStatus.mod_o1 === false) currentSystemBars.push({ icon: 'disconnect', name: 'M_O1', text: 'Desconexión', color: 'yellow' });
-                        if (vm.barStatus.mod_o2 === false) currentSystemBars.push({ icon: 'disconnect', name: 'M_O2', text: 'Desconexión', color: 'yellow' });
+                        if (vm.barStatus.M7IN_1 === 0) currentSystemBars.push({ icon: 'disconnect', name: 'M_I1', text: 'Desconexión', color: 'yellow' });
+                        if (vm.barStatus.M7IN_2 === 0) currentSystemBars.push({ icon: 'disconnect', name: 'M_I2', text: 'Desconexión', color: 'yellow' });
+                        if (vm.barStatus.MR3_1 === 0) currentSystemBars.push({ icon: 'disconnect', name: 'M_O1', text: 'Desconexión', color: 'yellow' });
+                        if (vm.barStatus.MR3_2 === 0) currentSystemBars.push({ icon: 'disconnect', name: 'M_O2', text: 'Desconexión', color: 'yellow' });
                     }
 
                     previousBarStatus = angular.copy(vm.barStatus);
