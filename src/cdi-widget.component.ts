@@ -176,7 +176,7 @@ angular.module('cdiService')
 
                     CdiWidgetService.getLstEvents(vm.apiDomain)
                         .then(function (data: any) {
-                            vm.lstEvents = data?.LASTEVENTS;
+                            vm.lstEvents = data?.LASTEVENTS.map((ev: any) => vm.translateEvent(ev));
                             $timeout(updateEventsScrollState, 50);
                         })
                         .catch(function () { vm.lstEvents = []; });
@@ -306,10 +306,10 @@ angular.module('cdiService')
                             // Reintentar si se recupero la conexion o falta cargar datos
                             if (wasOffline || !vm.installationName) {
                                 loadInitialData();
-                            } else if (vm.bars.length === 0) {
+                            } else {
                                 CdiWidgetService.getLstEvents(vm.apiDomain)
                                     .then(function (data: any) {
-                                        vm.lstEvents = data?.LASTEVENTS;
+                                        vm.lstEvents = data?.LASTEVENTS.map((ev: any) => vm.translateEvent(ev));                                        
                                         $timeout(updateEventsScrollState, 50);
                                     })
                                     .catch(function () {});

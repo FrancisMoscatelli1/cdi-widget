@@ -1036,11 +1036,11 @@
                         <div class="lstevents-empty" ng-if="!vm.lstEvents || vm.lstEvents.length === 0">
                             <span>Sin eventos registrados</span>
                         </div>
-                        <div class="lstevents-item" ng-repeat="ev in vm.lstEvents track by $index" ng-init="r = vm.translateEvent(ev)">
-                            <span class="lstevents-date">{{r.date}}</span>
-                            <span class="lstevents-type-tag">{{r.type}}</span>
-                            <span class="lstevents-name">{{r.status}}</span>
-                            <span class="lstevents-num">#{{r.number}}</span>
+                        <div class="lstevents-item" ng-repeat="ev in vm.lstEvents track by $index" ">
+                            <span class="lstevents-date">{{ev.date}}</span>
+                            <span class="lstevents-type-tag">{{ev.type}}</span>
+                            <span class="lstevents-name">{{ev.status}}</span>
+                            <span class="lstevents-num">#{{ev.number}}</span>
                         </div>
                     </div>
                     <div class="scroll-buttons" ng-if="vm.lstEvents.length > 0">
