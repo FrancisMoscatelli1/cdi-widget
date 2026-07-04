@@ -186,7 +186,7 @@ angular.module('cdiService')
 
                 vm.getCenterUrl = function () {
                     var mac = vm.installationMac;
-                    return 'https://cdi.efaisa.com.ar/' + mac;
+                    return 'https://cdi-dev.efaisa.com.ar/' + mac;
                 };
 
                 function formatDate(str: any): string {
