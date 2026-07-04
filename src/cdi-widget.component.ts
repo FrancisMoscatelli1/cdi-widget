@@ -176,7 +176,9 @@ angular.module('cdiService')
 
                     CdiWidgetService.getLstEvents(vm.apiDomain)
                         .then(function (data: any) {
-                            vm.lstEvents = data?.LASTEVENTS.map((ev: any) => vm.translateEvent(ev));
+                            vm.lstEvents = sortEventsByIndexDesc(
+                                (data?.LASTEVENTS || []).map((ev: any) => vm.translateEvent(ev))
+                            );
                             $timeout(updateEventsScrollState, 50);
                         })
                         .catch(function () { vm.lstEvents = []; });
@@ -211,8 +213,14 @@ angular.module('cdiService')
                     var status = (typeof ev.status === 'number' && statusArr[ev.status] != null)
                         ? statusArr[ev.status] : ev.status;
 
-                    return { date: formatDate(ev.date), type: type, number: number, status: status };
+                    return { date: formatDate(ev.date), type: type, number: number, status: status, index: ev.index };
                 };
+
+                function sortEventsByIndexDesc(events: any[]) {
+                    return (events || []).slice().sort(function (a: any, b: any) {
+                        return b.index - a.index;
+                    });
+                }
 
                 vm.confirm = { show: false };
                 let confirmTimeout: any = null;
@@ -309,7 +317,10 @@ angular.module('cdiService')
                             } else {
                                 CdiWidgetService.getLstEvents(vm.apiDomain)
                                     .then(function (data: any) {
-                                        vm.lstEvents = data?.LASTEVENTS.map((ev: any) => vm.translateEvent(ev));                                        
+                                        vm.lstEvents = sortEventsByIndexDesc(
+                                            (data?.LASTEVENTS || []).map((ev: any) => vm.translateEvent(ev))
+                                        );
+                                        
                                         $timeout(updateEventsScrollState, 50);
                                     })
                                     .catch(function () {});
