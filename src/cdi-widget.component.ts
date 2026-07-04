@@ -320,6 +320,7 @@ angular.module('cdiService')
                                         vm.lstEvents = sortEventsByIndexDesc(
                                             (data?.LASTEVENTS || []).map((ev: any) => vm.translateEvent(ev))
                                         );
+                                        console.log(vm.lstEvents);
                                         
                                         $timeout(updateEventsScrollState, 50);
                                     })
