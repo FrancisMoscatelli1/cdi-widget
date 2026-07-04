@@ -94,6 +94,7 @@ angular.module('cdiService')
 
                 vm.isConfigured = false;
                 vm.isModular = false;
+                vm.systemUnknown = true;
 
                 // Buttons state
                 vm.buttons = {
@@ -238,6 +239,7 @@ angular.module('cdiService')
                         .then(function (data: any) {
                             signalTraffic('get');
                             updateBarStatus(data.barstatus);
+                            vm.systemUnknown = false;
                             return true;
                         })
                         .catch(function (error: any) {
@@ -536,6 +538,7 @@ angular.module('cdiService')
                 }, 500);
 
                 vm.getSystemColor = function () {
+                    if (vm.systemUnknown) return 'unknown';
                     if (!vm.bars || vm.bars.length === 0) return 'green';
                     const colors = vm.bars.map(function (b) { return b.color; });
                     if (colors.indexOf('red') !== -1) return 'red';
@@ -686,6 +689,7 @@ angular.module('cdiService')
                         .then(function (response: any) {
                             signalTraffic('post');
                             vm.showLoader = false;
+                            vm.systemUnknown = true;
                             showAlert(CDI_CONFIG.DICTIONARY.modals.alert.reset.success.header[vm.language], CDI_CONFIG.DICTIONARY.modals.alert.reset.success.content[vm.language]);
                         })
                         .catch(function (error: any) {
