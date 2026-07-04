@@ -218,7 +218,7 @@ angular.module('cdiService')
 
                 function sortEventsByIndexDesc(events: any[]) {
                     return (events || []).slice().sort(function (a: any, b: any) {
-                        return (b.index + b.date) - (a.index + a.date);
+                        return (b.index + (b.date * 10000)) - (a.index + (a.date * 10000));
                     });
                 }
 
@@ -320,7 +320,6 @@ angular.module('cdiService')
                                         vm.lstEvents = sortEventsByIndexDesc(
                                             (data?.LASTEVENTS || []).map((ev: any) => vm.translateEvent(ev))
                                         );
-                                        console.log(vm.lstEvents);
                                         
                                         $timeout(updateEventsScrollState, 50);
                                     })
