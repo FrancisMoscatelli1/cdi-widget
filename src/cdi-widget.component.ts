@@ -218,7 +218,7 @@ angular.module('cdiService')
 
                 function sortEventsByIndexDesc(events: any[]) {
                     return (events || []).slice().sort(function (a: any, b: any) {
-                        return b.index - a.index;
+                        return (b.index + b.date) - (a.index + a.date);
                     });
                 }
 
