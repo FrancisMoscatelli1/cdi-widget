@@ -213,12 +213,12 @@ angular.module('cdiService')
                     var status = (typeof ev.status === 'number' && statusArr[ev.status] != null)
                         ? statusArr[ev.status] : ev.status;
 
-                    return { date: formatDate(ev.date), type: type, number: number, status: status, index: ev.index };
+                    return { date: formatDate(ev.date), rawDate: Number(ev.date), type: type, number: number, status: status, index: ev.index };
                 };
 
                 function sortEventsByIndexDesc(events: any[]) {
                     return (events || []).slice().sort(function (a: any, b: any) {
-                        return (b.index + (b.date * 10000)) - (a.index + (a.date * 10000));
+                        return (b.rawDate - a.rawDate) || (b.index - a.index);
                     });
                 }
 
