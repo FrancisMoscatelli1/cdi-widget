@@ -1050,7 +1050,7 @@
                 </div>
                 <div class="normalized-info">
                     <h2 class="main-header-title" ng-class="vm.trafficDot">{{vm.installationName}}</h2>
-                    <h3 class="main-header-title" style="color: #badbcc; font-size: 16px;">{{vm.t('main.lineAndInputNormalization')}}</h3>
+                    <h3 ng-if="!vm.systemUnknown" class="main-header-title" style="color: #badbcc; font-size: 16px;">{{vm.t('main.lineAndInputNormalization')}}</h3>
                 </div>
             </div>
 
