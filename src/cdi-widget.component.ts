@@ -420,8 +420,6 @@ angular.module('cdiService')
 
                     if (vm.barStatus.batteryFault) {
                         currentSystemBars.push({ icon: 'batteryfault', name: 'Batería', text: 'Falla ' + batteryPercentage, color: 'yellow' });
-                    } else if (battery !== 100) {
-                        currentSystemBars.push({ icon: 'battery', name: 'Batería', text: batteryPercentage, color: 'green' });
                     }
 
                     if (!vm.barStatus.powerSupply) {
