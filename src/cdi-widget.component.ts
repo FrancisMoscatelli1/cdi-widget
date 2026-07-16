@@ -194,7 +194,7 @@ angular.module('cdiService')
                     var d = new Date(Number(str) * 1000);
                     if (isNaN(d.getTime())) return '';
                     function p2(n: number) { return n < 10 ? '0' + n : '' + n; }
-                    return p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
+                    return p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + String(d.getFullYear()) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes() ) + ':' + p2(d.getSeconds());
                 }
 
                 vm.translateEvent = function (ev: any) {
